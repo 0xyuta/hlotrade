@@ -1,0 +1,28 @@
+{
+  "name": "@hlo/ops",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "poster": "tsx src/main.ts poster",
+    "verifier": "tsx src/main.ts verifier",
+    "forwarder": "tsx src/main.ts forwarder",
+    "keeper": "tsx src/main.ts keeper",
+    "recovery": "tsx src/main.ts recovery",
+    "e2e": "tsx src/e2e.ts",
+    "scale-check": "tsx src/scale-check.ts"
+  },
+  "dependencies": {
+    "@hlo/calc": "file:../calc",
+    "aws4fetch": "1.0.20",
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

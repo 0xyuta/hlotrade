@@ -1,0 +1,11 @@
+{
+  "name": "hlo",
+  "private": true,
+  "workspaces": ["calc", "ops", "app"],
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "test": "npm test --workspaces --if-present"
+  }
+}

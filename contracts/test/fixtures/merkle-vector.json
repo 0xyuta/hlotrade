@@ -1,0 +1,57 @@
+{
+  "root": "0x26925d66debad4fe2ef12c5fd5ab76c6264b3f42cc18c4dfcc5eaa96c43d30eb",
+  "leaves": [
+    {
+      "user": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+      "entitlement": "1000000000000000000",
+      "proof": [
+        "0x05df77d8b87f62965bd76d18c067aabc1901e14a131fafa664992cde24fd6c78",
+        "0xb16d39421da41c32c5a61c9567d47bd3a59157638cb1933f6aa477163f5cd87c",
+        "0x18f7b3b1b5d0e1151a5ec9777121436c6abc7a904252b59d357ed03890ad5acc"
+      ]
+    },
+    {
+      "user": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+      "entitlement": "250000000000000000",
+      "proof": [
+        "0xa1520eca4641d00d93f436d3964672213e130ac7f30a76d50e0c48b74ce875b2",
+        "0x4fd9d0f89d42cc03db058ecfe447ab509cd331290174ca1fe27d80ea12381f0f",
+        "0x18f7b3b1b5d0e1151a5ec9777121436c6abc7a904252b59d357ed03890ad5acc"
+      ]
+    },
+    {
+      "user": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "entitlement": "1",
+      "proof": [
+        "0xf0df3dcda05b4fbd9c655cde3d5ceb211e019e72ec816e127a59e7195f2cd7f5",
+        "0x21be7f4a6a2ae5cf23e86f381931e22a08afdadf8cd9c57d853c8b050f674943"
+      ]
+    },
+    {
+      "user": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+      "entitlement": "4999000000000000000000000",
+      "proof": [
+        "0x5ed01d5f10556e477f8b307f975d58d925d7c7977ae1ca96cd31d4b440ba5658",
+        "0x4fd9d0f89d42cc03db058ecfe447ab509cd331290174ca1fe27d80ea12381f0f",
+        "0x18f7b3b1b5d0e1151a5ec9777121436c6abc7a904252b59d357ed03890ad5acc"
+      ]
+    },
+    {
+      "user": "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc",
+      "entitlement": "123456789",
+      "proof": [
+        "0x48b89d46ac36bc91cff52fda8f367663966eeb47da22a76a3f52c1ed976504ee",
+        "0xb16d39421da41c32c5a61c9567d47bd3a59157638cb1933f6aa477163f5cd87c",
+        "0x18f7b3b1b5d0e1151a5ec9777121436c6abc7a904252b59d357ed03890ad5acc"
+      ]
+    },
+    {
+      "user": "0x0000000000000000000000000000000000000000",
+      "entitlement": "0",
+      "proof": [
+        "0xb603ca691aa0d0ecd0b23afbf705f86ee2309d5b7538017d6355987c2ea8ca9c",
+        "0x21be7f4a6a2ae5cf23e86f381931e22a08afdadf8cd9c57d853c8b050f674943"
+      ]
+    }
+  ]
+}

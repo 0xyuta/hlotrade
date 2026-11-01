@@ -1,0 +1,35 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "hlo-pick-an-env",
+  "workers_dev": false,
+  "preview_urls": false,
+  "main": "./worker/index.ts",
+  "compatibility_date": "2026-10-28",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "none",
+    "run_worker_first": ["/*", "!/assets/*"]
+  },
+  "env": {
+    "testnet": {
+      "name": "hlo-testnet",
+      "vars": { "HLO_NETWORK": "testnet" },
+      "r2_buckets": [{ "binding": "REGISTRY", "bucket_name": "hlo-testnet" }],
+      "routes": [{ "pattern": "testnet.hlotrade.xyz", "custom_domain": true }],
+      "workers_dev": false,
+      "preview_urls": false
+    },
+    "mainnet": {
+      "name": "hlo",
+      "vars": { "HLO_NETWORK": "mainnet" },
+      "r2_buckets": [{ "binding": "REGISTRY", "bucket_name": "hlo-mainnet" }],
+      "routes": [
+        { "pattern": "hlotrade.xyz", "custom_domain": true },
+        { "pattern": "www.hlotrade.xyz", "custom_domain": true }
+      ],
+      "workers_dev": false,
+      "preview_urls": false
+    }
+  }
+}

@@ -1,0 +1,54 @@
+import { Fragment } from "react";
+import { useConfig } from "../../config/context";
+import { POP_ODDS } from "../../rewards/odds";
+import { liveFigures, liveNotes, tokenomicsFlows, tokenomicsSections } from "../../rewards/tokenomics";
+import { useRewards } from "../../rewards/useRewards";
+
+/** The Tokenomics tab (spec 2026-10-30 referrals §5): the rules from rewards/tokenomics.ts and live figures from the Rewards reads. */
+export function TokenomicsScreen() {
+  const cfg = useConfig();
+  const { state } = useRewards(null);
+  const data = state.kind === "ready" ? state.data : null;
+  const full = data?.full ?? null;
+  const figures = liveFigures(
+    full ? { totalBurned: full.protocol.totalBurned, totalBought: full.protocol.totalBought, totalStaked: full.staking.totalStaked } : null,
+    data?.latest ? BigInt(data.latest.vault.amount) : null,
+  );
+  return (
+    <>
+      <section className="card">
+        <h2 className="card-h">HLO tokenomics</h2>
+        <p className="card-sub">Where the fees go and how HLO is mined.</p>
+        <div className="flows">
+          {tokenomicsFlows().map((f) => (
+            <div key={f.label} className="flow" role="group" aria-label={f.label}>
+              {f.steps.map((s, i) => (
+                <Fragment key={s}>
+                  {i > 0 && <span className="flow-arrow" aria-hidden="true">→</span>}
+                  <span className="flow-box">{s}</span>
+                </Fragment>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+      <div className="grid2">
+        {tokenomicsSections(POP_ODDS[cfg.hyperEvmChainId]).map((s) => (
+          <section key={s.title} className="card">
+            <h2 className="card-h">{s.title}</h2>
+            {s.lines.map((l) => <p key={l}>{l}</p>)}
+          </section>
+        ))}
+        <section className="card">
+          <h2 className="card-h">Live</h2>
+          {figures.map((f) => (
+            <div key={f.label} className="stat"><span className="k">{f.label}</span><span className="v">{f.value}</span></div>
+          ))}
+          {data && liveNotes(data).map((n) => <p key={n} className="muted small">{n}</p>)}
+          {state.kind === "off" && <p className="muted small">The contracts are not deployed on this network yet.</p>}
+          {state.kind === "down" && <p className="muted small">HyperEVM is not answering right now.</p>}
+        </section>
+      </div>
+    </>
+  );
+}

@@ -1,0 +1,24 @@
+{
+  "network": "testnet",
+  "hyperEvmRpc": "https://rpc.hyperliquid-testnet.xyz/evm",
+  "arbitrumRpc": "https://sepolia-rollup.arbitrum.io/rpc",
+  "ethereumRpc": "https://ethereum-sepolia-rpc.publicnode.com",
+  "withdrawEnabled": true,
+  "solanaEnabled": true,
+  "solanaRpc": "https://api.devnet.solana.com",
+  "rewardsBase": "https://files-testnet.hlotrade.xyz/998/",
+  "builder": "0xe6aa440E01bFEffB8914fd9861C6dAF57cc4eE14",
+  "referralCode": "HLO",
+  "deployment": {
+    "buyback": "0x3B29c923fDc5DCE0a8508431299C74ADA15De73F",
+    "chainId": 998,
+    "checkpoints": "0x561978bbE2C5347E1BC68d4A1cCf06Cc44114f70",
+    "deployBlock": 68268293,
+    "mining": "0x08caDBa43b91890739f91c41f769c0C9E7B358f5",
+    "pair": "0xe93047E27643c79611d547B79a62c3f3a542BB5b",
+    "profiles": "0x191053cF19D463fB3Af9EE546E14cf45e097b4Db",
+    "splitter": "0xca6E040C5202b5412F41d845cC1938267f20dfa6",
+    "staking": "0x5A0c71345B4f58e9F4750fCEb549e07DD70fe64f",
+    "token": "0xfBddfb8E5bf3871D09223140f517f27E3f458198"
+  }
+}

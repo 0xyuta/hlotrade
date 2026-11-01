@@ -1,0 +1,9 @@
+{
+  "network": "testnet",
+  "hyperEvmRpc": "https://rpc.hyperliquid-testnet.xyz/evm",
+  "arbitrumRpc": "https://sepolia-rollup.arbitrum.io/rpc",
+  "ethereumRpc": "https://ethereum-sepolia-rpc.publicnode.com",
+  "withdrawEnabled": true,
+  "solanaEnabled": true,
+  "solanaRpc": "https://api.devnet.solana.com"
+}

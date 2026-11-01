@@ -1,0 +1,47 @@
+{
+  "name": "@hlo/app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "vite",
+    "dev:testnet": "vite --mode testnet",
+    "build": "vite build",
+    "build:testnet": "vite build --mode testnet",
+    "preview": "vite preview",
+    "dev:worker": "vite build --mode testnet && wrangler dev --env testnet",
+    "deploy:testnet": "vite build --mode testnet && wrangler deploy --env testnet",
+    "deploy:mainnet": "vite build && wrangler deploy --env mainnet",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nktkas/hyperliquid": "0.33.3",
+    "@solana/kit": "8.5.0",
+    "@wallet-standard/app": "1.1.1",
+    "jsqr": "1.4.0",
+    "lightweight-charts": "5.2.1",
+    "qrcode": "^1.5.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@hlo/calc": "file:../calc",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/node": "^22.0.0",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "jsdom": "^25.0.0",
+    "typescript": "^5.6.0",
+    "vite": "^5.4.0",
+    "vitest": "^2.1.0",
+    "wrangler": "4.156.0"
+  }
+}
