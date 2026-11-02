@@ -53,8 +53,8 @@ describe("parseConfig", () => {
     expect(text).toMatch(/API_WALLET_KEY/);
     expect(text).not.toContain(bad);
   });
-  it("refuses mainnet until HLO is live there, and an unknown network", () => {
-    expect(() => bot.parseConfig({ ...ok, HLO_NETWORK: "mainnet" })).toThrow(/not live on mainnet/);
+  it("takes mainnet with mainnet's builder, and refuses an unknown network", () => {
+    expect(bot.parseConfig({ ...ok, HLO_NETWORK: "mainnet" }).builder).toBe((mainnet as { builder: string }).builder.toLowerCase());
     expect(() => bot.parseConfig({ ...ok, HLO_NETWORK: "x" })).toThrow(/HLO_NETWORK/);
   });
   it.each([

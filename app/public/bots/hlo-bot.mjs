@@ -13,7 +13,7 @@
 import { pathToFileURL } from "node:url";
 
 /** The builder per network; null until HLO is live there. */
-export const BUILDERS = { testnet: "0xe6aa440e01bfeffb8914fd9861c6daf57cc4ee14", mainnet: null };
+export const BUILDERS = { testnet: "0xe6aa440e01bfeffb8914fd9861c6daf57cc4ee14", mainnet: "0x517b22f40b1b9bebf1776fa9d732e2c27fdeb590" };
 export const SITES = { testnet: "https://testnet.hlotrade.xyz", mainnet: "https://hlotrade.xyz" };
 /** Tenths of a basis point: 100 is the 0.1% that counts. */
 export const BUILDER_F = 100;

@@ -120,7 +120,7 @@ npm run build -w app        # mainnet.json; `npm run build:testnet -w app` for t
 npm run dev:worker -w app   # builds testnet and runs the Worker with the built app (wrangler dev)
 npm exec -w app -- wrangler login   # once per machine; the login stays in the owner's user config, no token in the repo
 npm run deploy:testnet -w app       # build + wrangler deploy --env testnet (testnet.hlotrade.xyz); always via the scripts or with --env
-npm run deploy:mainnet -w app       # only on the owner's say (hlotrade.xyz); needs the mainnet.json deployment first
+HLO_ALLOW_MAINNET_WITHDRAW=1 npm run deploy:mainnet -w app   # only on the owner's say (hlotrade.xyz); withdrawals are on in mainnet.json since 2026-11-02
 ```
 
 Gotchas:

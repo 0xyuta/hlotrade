@@ -1,1 +1,23 @@
-{}
+{
+  "network": "mainnet",
+  "hyperEvmRpc": "https://rpc.hyperliquid.xyz/evm",
+  "arbitrumRpc": "https://arb1.arbitrum.io/rpc",
+  "ethereumRpc": "https://ethereum-rpc.publicnode.com",
+  "withdrawEnabled": true,
+  "solanaEnabled": false,
+  "rewardsBase": "https://files.hlotrade.xyz/999/",
+  "builder": "0x517B22f40b1b9beBf1776fA9D732E2C27fDEB590",
+  "referralCode": "HLO",
+  "deployment": {
+    "buyback": "0x0D1243aA9534E7d82816bD46e0631cB08a845d20",
+    "chainId": 999,
+    "checkpoints": "0xA52A52cA38E28D68E00636E3C4aA92A484BA892c",
+    "deployBlock": 50186688,
+    "mining": "0xCE71E7e8De75AeE80916FcAC1A9929c8ea37CaA7",
+    "pair": "0x0Bc15fd6432bc63c89E2c6623fbCB9a86bA427db",
+    "profiles": "0x70426e8260720945eF80c930aA5ba12AF409C5Ba",
+    "splitter": "0xf3cf05Cc1cE67a1AD9524C3785d1a8b4AAf747a4",
+    "staking": "0xB039B6715EeD40E45F4373E1b5C892d9217cB9c6",
+    "token": "0xa4Bb42d6D7F36b6EA0C4A0890691826C9C077005"
+  }
+}
