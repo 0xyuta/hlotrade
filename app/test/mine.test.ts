@@ -122,8 +122,8 @@ describe("the mine order", () => {
     expect(startLabel(false, 1000, "ETH", 1)).toBe("Start mining: short $1,000 ETH");
     expect(startLabel(true, 100, "BTC", 5)).toBe("Start mining: long $500 BTC at 5×");
     expect(startLabel(true, Number.NaN, "BTC", 5)).toBe("Start mining");
-    expect(riskText(0.145, null, 100)).toBe("Real position. Fee about $0.15. You can lose money.");
-    expect(riskText(0.725, 64_800, 100)).toBe("Real position. Fee about $0.73. Liquidation near 64,800: you could lose your $100.");
+    expect(riskText(null, 100)).toBe("Real position. You can lose money.");
+    expect(riskText(64_800, 100)).toBe("Real position. Liquidation near 64,800: you could lose your $100.");
   });
 });
 

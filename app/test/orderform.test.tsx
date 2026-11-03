@@ -35,10 +35,10 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("OrderForm", () => {
-  it("fee line at 5x reads 0.73% of margin", () => {
+  it("shows no fee line", () => {
     render(<OrderForm coin="BTC" />);
     type("Margin (USDC)", "10");
-    expect(screen.getByText(/fees: \$0\.07 \(0\.73% of margin\)/)).toBeTruthy();
+    expect(screen.queryByText(/fee/i)).toBeNull();
   });
 
   it("warns when the margin is more than what is available", () => {

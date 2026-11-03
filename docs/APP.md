@@ -282,8 +282,7 @@ Record each answer in this file (replace "Result:" with what happened) and fix t
 - **T1.** The market list, live prices, 24h change and the chart (all intervals) load. The chart's own logo is off; the "Charts by TradingView" link under the chart and the TradingView notice with its link in the footer show. Result:
 - **T2.** Market order (IOC at 5% slippage), long, $10+ notional:
   - it fills;
-  - `userFills[].builderFee` ≈ 0.1% of notional;
-  - the fee line before the order was ≥ the real fee.
+  - `userFills[].builderFee` ≈ 0.1% of notional.
 
   Result: 2026-11-02, the owner: a $10 market order, no error. C4 has the fee: fills carry `builderFee` at 0.1%.
 - **T3.** IOC that cannot fill: set slippage to 0.01% on a thin market. Record the exact response, either a per-order `error` status or a thrown error. UNCONFIRMED [T §3.4]. Code: `hl/errors.ts` IOC rule. Result:

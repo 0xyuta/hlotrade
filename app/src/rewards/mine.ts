@@ -98,9 +98,8 @@ export function startLabel(isBuy: boolean, amountUsd: number, coin: string, leve
 }
 
 /** `liq` is the estimated liquidation price, null when there is none (a 1x long). */
-export function riskText(feeUsd: number, liq: number | null, amountUsd: number): string {
-  const fee = `Real position. Fee about $${fmtUsd(feeUsd)}.`;
-  return liq === null ? `${fee} You can lose money.` : `${fee} Liquidation near ${fmtPx(liq)}: you could lose your ${money(amountUsd)}.`;
+export function riskText(liq: number | null, amountUsd: number): string {
+  return liq === null ? "Real position. You can lose money." : `Real position. Liquidation near ${fmtPx(liq)}: you could lose your ${money(amountUsd)}.`;
 }
 
 export const minePosition = (positions: readonly Position[], coin: string): Position | null => positions.find((p) => p.coin === coin) ?? null;

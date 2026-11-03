@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  BUILDER_F, BUILDER_FEE_RATE, change24h, limitFromPct, pctFromTpslPrice, tpslPriceFromPct, estimateLiq, feePctOfMargin, livePnl, liqPriceIsolated, orderFee, priceTickDecimals, roundPrice, roundSize, sizeFromMargin, slippagePrice, usdToUnits,
+  BUILDER_F, BUILDER_FEE_RATE, change24h, limitFromPct, pctFromTpslPrice, tpslPriceFromPct, estimateLiq, livePnl, liqPriceIsolated, priceTickDecimals, roundPrice, roundSize, sizeFromMargin, slippagePrice, usdToUnits,
 } from "../src/hl/math";
 
 describe("roundPrice [T §3.5]", () => {
@@ -68,13 +68,6 @@ describe("slippagePrice [T §3.4]", () => {
     expect(slippagePrice(80000, true, 0.05, 5)).toBe("84000");
     expect(slippagePrice(80000, false, 0.05, 5)).toBe("76000");
     expect(slippagePrice(1890.49, true, 0.05, 4)).toBe("1985.1");
-  });
-});
-
-describe("fees [T §5.3]", () => {
-  it("fee = notional × (taker + 0.1%) and % of margin = leverage × that", () => {
-    expect(orderFee(1000, 0.00045)).toBeCloseTo(1.45, 10);
-    expect(feePctOfMargin(10, 0.00045)).toBeCloseTo(1.45, 10);
   });
 });
 

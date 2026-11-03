@@ -4,7 +4,7 @@ import { useAccount } from "../../hl/AccountProvider";
 import { useBook } from "../../hl/book";
 import { useHl } from "../../hl/HlProvider";
 import { impactPctText, impactWarning, passesLimit, priceImpact, shouldWarn } from "../../hl/impact";
-import { DEFAULT_SLIPPAGE, estimateLiq, feePctOfMargin, limitFromPct, orderFee, sizeFromMargin } from "../../hl/math";
+import { DEFAULT_SLIPPAGE, estimateLiq, limitFromPct, sizeFromMargin } from "../../hl/math";
 import { num, outcomeText, planOrder } from "../../hl/orders";
 import { fillNote } from "../../hl/positions";
 import { placeOrder } from "../../hl/trade";
@@ -80,7 +80,6 @@ export function OrderForm({ coin, onResult }: { coin: string; onResult?: (r: Ord
     [m, kind, isBuy, size, ref, limitPx, slippagePct, tpPx, slPx],
   );
   const notional = plan?.ok ? plan.plan.notional : size * entry;
-  const fee = orderFee(notional, account.takerRate);
   const liq = m && size > 0 ? estimateLiq(entry, size, isBuy, lev, m.maxLeverage) : null;
   const book = useBook(cfg.network, coin, kind === "market" && size > 0);
   const impact = kind === "market" && book ? priceImpact(book, isBuy, size) : null;
@@ -170,7 +169,6 @@ export function OrderForm({ coin, onResult }: { coin: string; onResult?: (r: Ord
       {kind === "market" && plan?.ok && <div className="stat"><span className="k">Worst price</span><span className="v">{fmtPx(Number(plan.plan.orders[0].p))}</span></div>}
       {kind === "market" && size > 0 && <div className="stat"><span className="k">Price impact</span><span className={`v ${warn ? "hot" : ""}`}>{impact ? impactPctText(impact) : "—"}</span></div>}
       <div className="stat"><span className="k">Est. liquidation</span><span className="v">{liq ? fmtPx(liq) : "—"}</span></div>
-      <div className="fee-line">fees: ${fmtUsd(fee)} ({(feePctOfMargin(lev, account.takerRate) + 1e-9).toFixed(2)}% of margin)</div>
       {warn && (
         <div className="impact-warn" role="alert">
           <p>{impactWarning(impact, "This order")} A smaller size or a limit order costs less.</p>

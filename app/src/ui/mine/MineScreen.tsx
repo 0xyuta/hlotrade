@@ -6,7 +6,7 @@ import { useHl } from "../../hl/HlProvider";
 import { impactPctText, impactWarning, priceImpact, shouldWarn } from "../../hl/impact";
 import { COIN_KEY } from "../../hl/markets";
 import { browserKV } from "../../hl/agent";
-import { estimateLiq, livePnl, orderFee } from "../../hl/math";
+import { estimateLiq, livePnl } from "../../hl/math";
 import { num } from "../../hl/orders";
 import { useTrading } from "../../hl/TradingProvider";
 import { feeTable, tradeRows } from "../../rewards/explore";
@@ -195,7 +195,7 @@ export function MineScreen() {
               </button>
             ) : <EnableGate />}
             {estimateText(amountN * leverage, lastTotal) && <p className="muted small mine-center">{estimateText(amountN * leverage, lastTotal)}</p>}
-            {plan?.ok && <p className="muted small mine-center">{riskText(orderFee(plan.plan.notional, account.takerRate), liq, amountN)}</p>}
+            {plan?.ok && <p className="muted small mine-center">{riskText(liq, amountN)}</p>}
             {plan && !plan.ok && amount.trim() !== "" && <p className="muted small mine-center">{plan.error}</p>}
             {tooMuch && <p className="muted small mine-center">{tooMuch}</p>}
             {ready && fundsText(available) && <p className="note">{fundsText(available)}</p>}

@@ -61,10 +61,6 @@ export function slippagePrice(ref: number, isBuy: boolean, slippage: number, szD
   return roundPrice(ref * (isBuy ? 1 + slippage : 1 - slippage), szDecimals, isBuy ? "up" : "down");
 }
 
-/** [T §5.3] Fee in USD; uses the taker rate for every order, which can only overstate a maker fill. */
-export const orderFee = (notional: number, takerRate: number) => notional * (takerRate + BUILDER_FEE_RATE);
-/** "Y% of margin" = fee ÷ (notional ÷ leverage). */
-export const feePctOfMargin = (leverage: number, takerRate: number) => leverage * (takerRate + BUILDER_FEE_RATE) * 100;
 
 export const sizeFromMargin = (marginUsd: number, leverage: number, price: number, szDecimals: number) =>
   roundSize((marginUsd * leverage) / price, szDecimals, "down");

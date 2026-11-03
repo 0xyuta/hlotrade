@@ -80,7 +80,7 @@ describe("MineScreen, nothing open", () => {
   it("sends one market order at 1x with nothing attached, and sends no close", async () => {
     render(<MineScreen />);
     expect(start().textContent).toBe("Start mining: long $100 BTC");
-    expect(screen.getByText("Real position. Fee about $0.15. You can lose money.")).toBeTruthy();
+    expect(screen.getByText("Real position. You can lose money.")).toBeTruthy();
     fireEvent.click(start());
     await waitFor(() => expect(placeOrder).toHaveBeenCalledTimes(1));
     const arg = placeOrder.mock.calls[0][0];

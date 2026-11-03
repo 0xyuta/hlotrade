@@ -142,7 +142,7 @@ The exact DEX (for example HyperSwap V2) and the HyperEVM USDC address are fixed
   - Market and Limit tabs, optional TP/SL;
   - a leverage slider capped at the market's maximum;
   - isolated margin.
-- Before every order, the form shows "fees: $X (Y% of margin)".
+- The order form and Mine screen show no fee line (the owner's decision, 2026-11-03). The 0.1% is stated when the user enables trading.
 - Tabs: positions (PnL, liquidation price, close, reverse, edit TP/SL), open orders, trade history.
 
 **Rewards screen**
