@@ -1,5 +1,7 @@
+import type { AppConfig } from "../config/validate";
 import { BUILDER_FEE_RATE } from "../hl/math";
 import { fmtHlo } from "../ui/format";
+import { HYPEREVM_SCAN } from "../wallet/chains";
 import {
   BURN_PCT, BUYBACK_PCT, BUY_EVERY_MINUTES, BUY_SLICES, CLAIM_CAP, KEEPER_MIN_BUY_USD, CLAIM_PAID_PCT, CLAIM_PER_HOUR, MAX_SUPPLY, POOL_OPEN_DAYS,
   POOL_OPEN_EXTRA_HOURS, POOL_SEED, TRADER_PER_MINUTE, VAULT_PAY_PCT, VAULT_PER_MINUTE,
@@ -24,6 +26,13 @@ const hlo = (x: bigint, d = 0) => `${fmtHlo(x, d)} HLO`;
 const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
 /** "7 days and 1 hour after launch" (Buyback.OPEN_DELAY after a launch time 1 hour past mining's). */
 const poolOpensText = () => `${plural(POOL_OPEN_DAYS, "day")} and ${plural(POOL_OPEN_EXTRA_HOURS, "hour")} after launch`;
+
+/** The HLO token's address for the top of the tab, with its HyperEVMScan page on mainnet; null before a deployment. */
+export function tokenContract(cfg: Pick<AppConfig, "network" | "contracts">): { address: string; explorerUrl: string | null } | null {
+  const address = cfg.contracts?.token;
+  if (!address) return null;
+  return { address, explorerUrl: cfg.network === "mainnet" ? `${HYPEREVM_SCAN}/token/${address}` : null };
+}
 
 /** The builder fee every order carries, as a percent: BUILDER_FEE_RATE 0.001 → "0.1%". */
 export const builderFeeText = () => `${Number((BUILDER_FEE_RATE * 100).toFixed(4))}%`;

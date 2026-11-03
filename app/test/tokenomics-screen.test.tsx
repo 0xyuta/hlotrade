@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AppConfig } from "../src/config/validate";
 import { tokenomicsFlows, tokenomicsSections } from "../src/rewards/tokenomics";
@@ -73,5 +73,19 @@ describe("TokenomicsScreen", () => {
     render(<TokenomicsScreen />);
     expect(screen.getAllByText("—")).toHaveLength(4);
     expect(screen.getByText(/not deployed on this network yet/)).toBeTruthy();
+    expect(screen.queryByText("HLO token contract")).toBeNull();
+  });
+  it("shows the token contract at the top, copies it, and links to HyperEVMScan", async () => {
+    const token = "0xa4Bb42d6D7F36b6EA0C4A0890691826C9C077005";
+    cfg = { network: "mainnet", hyperEvmChainId: 999, contracts: { token } } as unknown as AppConfig;
+    const writeText = vi.fn(() => Promise.resolve());
+    Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
+    render(<TokenomicsScreen />);
+    expect(screen.getByText("HLO token contract")).toBeTruthy();
+    expect(screen.getByText(token)).toBeTruthy();
+    expect(screen.getByRole("link", { name: "HyperEVMScan" }).getAttribute("href")).toBe(`https://hyperevmscan.io/token/${token}`);
+    fireEvent.click(screen.getByRole("button", { name: "Copy" }));
+    expect(writeText).toHaveBeenCalledWith(token);
+    expect(await screen.findByRole("button", { name: "Copied" })).toBeTruthy();
   });
 });

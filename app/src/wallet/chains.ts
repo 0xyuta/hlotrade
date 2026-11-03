@@ -16,6 +16,9 @@ const NAMES: Record<EvmKind, Record<Network, string>> = {
   ethereum: { mainnet: "Ethereum", testnet: "Sepolia" },
 };
 
+/** HyperEVM mainnet's explorer (testnet has none we link to). */
+export const HYPEREVM_SCAN = "https://hyperevmscan.io";
+
 const cache = new Map<string, Chain>();
 
 export function viemChain(kind: EvmKind, cfg: AppConfig): Chain {
@@ -28,7 +31,7 @@ export function viemChain(kind: EvmKind, cfg: AppConfig): Chain {
       name: NAMES[kind][cfg.network],
       nativeCurrency: kind === "hyperEvm" ? { name: "HYPE", symbol: "HYPE", decimals: 18 } : { name: "Ether", symbol: "ETH", decimals: 18 },
       rpcUrls: { default: { http: [rpc] } },
-      ...(kind === "hyperEvm" && cfg.network === "mainnet" ? { blockExplorers: { default: { name: "HyperEVMScan", url: "https://hyperevmscan.io" } } } : {}),
+      ...(kind === "hyperEvm" && cfg.network === "mainnet" ? { blockExplorers: { default: { name: "HyperEVMScan", url: HYPEREVM_SCAN } } } : {}),
     });
     cache.set(key, c);
   }

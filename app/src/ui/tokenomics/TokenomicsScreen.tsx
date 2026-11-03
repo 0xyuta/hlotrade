@@ -1,7 +1,7 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { useConfig } from "../../config/context";
 import { POP_ODDS } from "../../rewards/odds";
-import { liveFigures, liveNotes, tokenomicsFlows, tokenomicsSections } from "../../rewards/tokenomics";
+import { liveFigures, liveNotes, tokenContract, tokenomicsFlows, tokenomicsSections } from "../../rewards/tokenomics";
 import { useRewards } from "../../rewards/useRewards";
 
 /** The Tokenomics tab (spec 2026-10-30 referrals §5): the rules from rewards/tokenomics.ts and live figures from the Rewards reads. */
@@ -19,6 +19,7 @@ export function TokenomicsScreen() {
       <section className="card">
         <h2 className="card-h">HLO tokenomics</h2>
         <p className="card-sub">Where the fees go and how HLO is mined.</p>
+        <TokenAddress />
         <div className="flows">
           {tokenomicsFlows().map((f) => (
             <div key={f.label} className="flow" role="group" aria-label={f.label}>
@@ -50,5 +51,34 @@ export function TokenomicsScreen() {
         </section>
       </div>
     </>
+  );
+}
+
+const COPY_FAILED = "Could not copy. Select the address and copy it by hand.";
+
+/** The token's contract address, with Copy and its HyperEVMScan page (mainnet); nothing before a deployment. */
+function TokenAddress() {
+  const t = tokenContract(useConfig());
+  const [copied, setCopied] = useState(false);
+  const [failed, setFailed] = useState(false);
+  if (!t) return null;
+  const copy = () => {
+    try {
+      if (!navigator.clipboard) return setFailed(true);
+      navigator.clipboard.writeText(t.address).then(() => setCopied(true), () => setFailed(true));
+    } catch {
+      setFailed(true);
+    }
+  };
+  return (
+    <div className="token-ca">
+      <span className="muted small">HLO token contract</span>
+      <span className="token-ca-addr">{t.address}</span>
+      <span className="token-ca-actions">
+        <button className="btn small" onClick={copy}>{copied ? "Copied" : "Copy"}</button>
+        {t.explorerUrl && <a className="btn small" href={t.explorerUrl} target="_blank" rel="noreferrer">HyperEVMScan</a>}
+      </span>
+      {failed && <span className="muted small">{COPY_FAILED}</span>}
+    </div>
   );
 }

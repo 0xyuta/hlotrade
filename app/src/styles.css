@@ -223,6 +223,10 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .flow-box { background: var(--card-2); border: 1px solid var(--line); border-radius: var(--radius-s); padding: 8px 12px; font-size: 13px; }
 .flow-arrow { color: var(--muted); }
+.token-ca { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; background: var(--card-2); border: 1px solid var(--line); border-radius: var(--radius-s); padding: 10px 12px; margin-bottom: 12px; }
+.token-ca-addr { font-family: var(--mono); font-size: 13px; word-break: break-all; }
+.token-ca-actions { display: flex; gap: 8px; margin-left: auto; }
+.token-ca a.btn { display: inline-flex; align-items: center; text-decoration: none; }
 
 /* Coin icons, and the letter when an icon does not load. */
 .coin-icon { flex: none; display: block; border-radius: 50%; object-fit: cover; background: rgba(255, 255, 255, 0.14); } /* a dark logo stays visible */

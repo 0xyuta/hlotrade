@@ -5,7 +5,18 @@ import {
   BURN_PCT, BUYBACK_PCT, BUY_EVERY_MINUTES, BUY_SLICES, CLAIM_CAP, CLAIM_PAID_PCT, CLAIM_PER_HOUR, MAX_SUPPLY, POOL_OPEN_DAYS,
   POOL_OPEN_EXTRA_HOURS, POOL_SEED, TRADER_PER_MINUTE, VAULT_PAY_PCT, VAULT_PER_MINUTE,
 } from "../src/rewards/constants";
-import { builderFeeText, liveFigures, liveNotes, tokenomicsFlows, tokenomicsSections } from "../src/rewards/tokenomics";
+import { builderFeeText, liveFigures, liveNotes, tokenContract, tokenomicsFlows, tokenomicsSections } from "../src/rewards/tokenomics";
+
+describe("tokenContract", () => {
+  const token = "0xa4Bb42d6D7F36b6EA0C4A0890691826C9C077005" as const;
+  it("mainnet: the address and its HyperEVMScan page", () => {
+    expect(tokenContract({ network: "mainnet", contracts: { token } as never })).toEqual({ address: token, explorerUrl: `https://hyperevmscan.io/token/${token}` });
+  });
+  it("testnet: the address, no explorer link; nothing before a deployment", () => {
+    expect(tokenContract({ network: "testnet", contracts: { token } as never })).toEqual({ address: token, explorerUrl: null });
+    expect(tokenContract({ network: "mainnet", contracts: null })).toBeNull();
+  });
+});
 
 const src = (p: string) => readFileSync(new URL(`../../${p}`, import.meta.url), "utf8");
 const E18 = 10n ** 18n;
