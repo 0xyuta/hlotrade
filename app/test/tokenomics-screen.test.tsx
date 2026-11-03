@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AppConfig } from "../src/config/validate";
-import { tokenomicsFlows, tokenomicsSections } from "../src/rewards/tokenomics";
+import { tokenomicsFlows, tokenomicsSections, VERIFIED_TEXT } from "../src/rewards/tokenomics";
 import type { RewardsState } from "../src/rewards/useRewards";
 
 let state: RewardsState;
@@ -82,10 +82,24 @@ describe("TokenomicsScreen", () => {
     Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
     render(<TokenomicsScreen />);
     expect(screen.getByText("HLO token contract")).toBeTruthy();
-    expect(screen.getByText(token)).toBeTruthy();
+    expect(screen.getAllByText(token)).toHaveLength(2); // the top row, and the Contracts card
     expect(screen.getByRole("link", { name: "HyperEVMScan" }).getAttribute("href")).toBe(`https://hyperevmscan.io/token/${token}`);
     fireEvent.click(screen.getByRole("button", { name: "Copy" }));
     expect(writeText).toHaveBeenCalledWith(token);
     expect(await screen.findByRole("button", { name: "Copied" })).toBeTruthy();
+  });
+  it("lists every contract with a link to its verified source on mainnet", () => {
+    const c = { token: "0xa4Bb42d6D7F36b6EA0C4A0890691826C9C077005", checkpoints: "0x02", mining: "0x03", staking: "0x04", buyback: "0x05", splitter: "0x06", profiles: "0x07", pair: "0x08" };
+    cfg = { network: "mainnet", hyperEvmChainId: 999, contracts: c } as unknown as AppConfig;
+    render(<TokenomicsScreen />);
+    const card = screen.getByRole("region", { name: "Contracts" });
+    expect(card.textContent).toContain(VERIFIED_TEXT);
+    const links = Array.from(card.querySelectorAll("a"));
+    expect(links).toHaveLength(7);
+    expect(links.find((a) => a.textContent === "0x05")!.getAttribute("href")).toBe("https://hyperevmscan.io/address/0x05#code");
+  });
+  it("no Contracts card before a deployment", () => {
+    render(<TokenomicsScreen />);
+    expect(screen.queryByRole("region", { name: "Contracts" })).toBeNull();
   });
 });

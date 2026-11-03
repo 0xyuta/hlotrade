@@ -34,6 +34,36 @@ export function tokenContract(cfg: Pick<AppConfig, "network" | "contracts">): { 
   return { address, explorerUrl: cfg.network === "mainnet" ? `${HYPEREVM_SCAN}/token/${address}` : null };
 }
 
+export interface ContractRow {
+  name: string;
+  job: string;
+  address: string;
+  url: string | null;
+}
+
+/** Shown under the list on mainnet only: all 7 mainnet contracts were verified on 2026-11-03 (testnet's never were). */
+export const VERIFIED_TEXT = "Every contract's source code is verified on HyperEVMScan and Sourcify.";
+
+/** The Contracts card: HLO's seven contracts (not the pool's pair), each linking to its verified source on mainnet. */
+export function contractList(cfg: Pick<AppConfig, "network" | "contracts">): { rows: ContractRow[]; note: string | null } | null {
+  const c = cfg.contracts;
+  if (!c) return null;
+  const mainnet = cfg.network === "mainnet";
+  const row = (name: string, job: string, address: string): ContractRow => ({ name, job, address, url: mainnet ? `${HYPEREVM_SCAN}/address/${address}#code` : null });
+  return {
+    rows: [
+      row("HLO token", `Capped at ${hlo(MAX_SUPPLY)}`, c.token),
+      row("Mining", "Pays claims", c.mining),
+      row("Checkpoints", "One signed checkpoint a minute", c.checkpoints),
+      row("Staking", "Stake HLO", c.staking),
+      row("Buyback", "Holds fee USDC, opens the pool, buys HLO", c.buyback),
+      row("Splitter", `Sends ${BUYBACK_PCT}% of fees to the buyback`, c.splitter),
+      row("Profiles", "Usernames and avatars", c.profiles),
+    ],
+    note: mainnet ? VERIFIED_TEXT : null,
+  };
+}
+
 /** The builder fee every order carries, as a percent: BUILDER_FEE_RATE 0.001 → "0.1%". */
 export const builderFeeText = () => `${Number((BUILDER_FEE_RATE * 100).toFixed(4))}%`;
 

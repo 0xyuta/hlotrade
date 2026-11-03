@@ -5,7 +5,28 @@ import {
   BURN_PCT, BUYBACK_PCT, BUY_EVERY_MINUTES, BUY_SLICES, CLAIM_CAP, CLAIM_PAID_PCT, CLAIM_PER_HOUR, MAX_SUPPLY, POOL_OPEN_DAYS,
   POOL_OPEN_EXTRA_HOURS, POOL_SEED, TRADER_PER_MINUTE, VAULT_PAY_PCT, VAULT_PER_MINUTE,
 } from "../src/rewards/constants";
-import { builderFeeText, liveFigures, liveNotes, tokenContract, tokenomicsFlows, tokenomicsSections } from "../src/rewards/tokenomics";
+import { builderFeeText, contractList, liveFigures, liveNotes, tokenContract, tokenomicsFlows, tokenomicsSections, VERIFIED_TEXT } from "../src/rewards/tokenomics";
+
+describe("contractList", () => {
+  const contracts = {
+    token: "0x01", checkpoints: "0x02", mining: "0x03", staking: "0x04", buyback: "0x05", splitter: "0x06", profiles: "0x07", pair: "0x08",
+  } as never;
+  it("mainnet: the seven HLO contracts, each linking to its verified source, and the verified note", () => {
+    const l = contractList({ network: "mainnet", contracts })!;
+    expect(l.rows.map((r) => [r.name, r.address])).toEqual([
+      ["HLO token", "0x01"], ["Mining", "0x03"], ["Checkpoints", "0x02"], ["Staking", "0x04"], ["Buyback", "0x05"], ["Splitter", "0x06"], ["Profiles", "0x07"],
+    ]);
+    expect(l.rows[0].url).toBe("https://hyperevmscan.io/address/0x01#code");
+    expect(l.rows.find((r) => r.name === "Splitter")!.job).toBe("Sends 90% of fees to the buyback");
+    expect(l.note).toBe(VERIFIED_TEXT);
+  });
+  it("testnet: addresses only, no links and no verified note; nothing before a deployment", () => {
+    const l = contractList({ network: "testnet", contracts })!;
+    expect(l.rows.every((r) => r.url === null)).toBe(true);
+    expect(l.note).toBeNull();
+    expect(contractList({ network: "mainnet", contracts: null })).toBeNull();
+  });
+});
 
 describe("tokenContract", () => {
   const token = "0xa4Bb42d6D7F36b6EA0C4A0890691826C9C077005" as const;

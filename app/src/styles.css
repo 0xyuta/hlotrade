@@ -227,6 +227,12 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 .token-ca-addr { font-family: var(--mono); font-size: 13px; word-break: break-all; }
 .token-ca-actions { display: flex; gap: 8px; margin-left: auto; }
 .token-ca a.btn { display: inline-flex; align-items: center; text-decoration: none; }
+.contracts { display: grid; }
+.contract-row { display: grid; grid-template-columns: 120px minmax(0, 1fr) auto; align-items: baseline; gap: 4px 12px; padding: 8px 0; border-top: 1px solid var(--line); }
+.contract-row:first-child { border-top: 0; }
+.contract-name { font-weight: 600; }
+.contract-addr { font-family: var(--mono); font-size: 12.5px; word-break: break-all; }
+@media (max-width: 860px) { .contract-row { grid-template-columns: minmax(0, 1fr); } }
 
 /* Coin icons, and the letter when an icon does not load. */
 .coin-icon { flex: none; display: block; border-radius: 50%; object-fit: cover; background: rgba(255, 255, 255, 0.14); } /* a dark logo stays visible */

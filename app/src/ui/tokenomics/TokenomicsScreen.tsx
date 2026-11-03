@@ -1,7 +1,7 @@
 import { Fragment, useState } from "react";
 import { useConfig } from "../../config/context";
 import { POP_ODDS } from "../../rewards/odds";
-import { liveFigures, liveNotes, tokenContract, tokenomicsFlows, tokenomicsSections } from "../../rewards/tokenomics";
+import { contractList, liveFigures, liveNotes, tokenContract, tokenomicsFlows, tokenomicsSections } from "../../rewards/tokenomics";
 import { useRewards } from "../../rewards/useRewards";
 
 /** The Tokenomics tab (spec 2026-10-30 referrals §5): the rules from rewards/tokenomics.ts and live figures from the Rewards reads. */
@@ -50,7 +50,29 @@ export function TokenomicsScreen() {
           {state.kind === "down" && <p className="muted small">HyperEVM is not answering right now.</p>}
         </section>
       </div>
+      <Contracts />
     </>
+  );
+}
+
+/** Every HLO contract, linking to its verified source on mainnet; nothing before a deployment. */
+function Contracts() {
+  const list = contractList(useConfig());
+  if (!list) return null;
+  return (
+    <section className="card" aria-labelledby="contracts-h">
+      <h2 className="card-h" id="contracts-h">Contracts</h2>
+      {list.note && <p className="card-sub">{list.note}</p>}
+      <div className="contracts">
+        {list.rows.map((r) => (
+          <div key={r.name} className="contract-row">
+            <span className="contract-name">{r.name}</span>
+            <span className="muted small">{r.job}</span>
+            {r.url ? <a className="contract-addr" href={r.url} target="_blank" rel="noreferrer">{r.address}</a> : <span className="contract-addr">{r.address}</span>}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
