@@ -15,11 +15,13 @@ describe("Footer TradingView attribution", () => {
   });
 });
 
-describe("Footer X link", () => {
-  it("links to HLO's X account", () => {
+describe("Footer links", () => {
+  it("links to HLO's X account and its GitHub repo", () => {
     const { getByRole } = render(<Footer />);
-    const a = getByRole("link", { name: "HLO on X" });
-    expect(a.getAttribute("href")).toBe("https://x.com/hlotrade");
-    expect(a.getAttribute("target")).toBe("_blank");
+    for (const [name, href] of [["HLO on X", "https://x.com/hlotrade"], ["HLO on GitHub", "https://github.com/0xyuta/hlotrade"]]) {
+      const a = getByRole("link", { name });
+      expect(a.getAttribute("href")).toBe(href);
+      expect(a.getAttribute("target")).toBe("_blank");
+    }
   });
 });

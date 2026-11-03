@@ -71,8 +71,9 @@ a { color: var(--brand); }
 .topbar-actions { margin-left: auto; display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; min-width: 0; }
 .main { flex: 1; padding: 16px 20px; max-width: 1400px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 .footer { padding: 14px 20px; color: var(--faint); font-size: 12px; display: flex; flex-wrap: wrap; gap: 14px; border-top: 1px solid var(--line); }
-.footer-x { margin-left: auto; display: inline-flex; align-items: center; color: var(--muted); }
-.footer-x:hover { color: var(--text); }
+.footer-links { margin-left: auto; display: inline-flex; align-items: center; gap: 14px; }
+.footer-links a { display: inline-flex; color: var(--muted); }
+.footer-links a:hover { color: var(--text); }
 
 /* cards */
 .card { background: var(--card); border-radius: var(--radius); padding: 16px; }
@@ -126,6 +127,13 @@ a { color: var(--brand); }
 .modal:focus { outline: none; }
 .modal-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .modal-h h2 { margin: 0; font-size: 17px; }
+.modal.intro { width: min(760px, 100%); }
+.intro-img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: var(--radius-s); background: var(--bg); }
+.intro-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
+.intro-dots { display: inline-flex; gap: 6px; }
+.intro-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--line-2); }
+.intro-dots span.on { background: var(--brand); }
+.intro-actions { display: inline-flex; gap: 8px; }
 .menu { position: absolute; right: 0; top: calc(100% + 6px); background: var(--card); border: 1px solid var(--line-2); border-radius: var(--radius); box-shadow: var(--shadow); width: 320px; padding: 12px; z-index: 40; }
 .menu-anchor { position: relative; }
 .menu-item { display: block; width: 100%; text-align: left; appearance: none; border: none; background: none; padding: 8px; border-radius: var(--radius-s); cursor: pointer; }

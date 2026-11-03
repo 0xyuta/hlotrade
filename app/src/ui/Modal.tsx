@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 
 /** A dialog: focus moves in on open and back to the opener on close; Escape and a backdrop click close it. */
-export function Modal({ title, onClose, children }: { title: string; onClose(): void; children: ReactNode }) {
+export function Modal({ title, onClose, children, className }: { title: string; onClose(): void; children: ReactNode; className?: string }) {
   const box = useRef<HTMLDivElement>(null);
   const close = useRef(onClose);
   close.current = onClose; // a fresh onClose each render must not re-run the focus effect
@@ -29,7 +29,7 @@ export function Modal({ title, onClose, children }: { title: string; onClose(): 
 
   return (
     <div className="backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal" ref={box} tabIndex={-1} role="dialog" aria-modal="true" aria-label={title}>
+      <div className={className ? `modal ${className}` : "modal"} ref={box} tabIndex={-1} role="dialog" aria-modal="true" aria-label={title}>
         <div className="modal-h">
           <h2>{title}</h2>
           <button className="btn small" onClick={onClose} aria-label="Close">✕</button>

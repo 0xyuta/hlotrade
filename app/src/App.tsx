@@ -4,12 +4,14 @@ import type { AppConfig } from "./config/validate";
 import { AccountProvider } from "./hl/AccountProvider";
 import { browserKV } from "./hl/agent";
 import { HlProvider } from "./hl/HlProvider";
+import { INTRO_KEY, INTRO_SEEN, INTRO_TITLE, showIntro } from "./rewards/intro";
 import { captureRef } from "./hl/referral";
 import { TradingProvider } from "./hl/TradingProvider";
 import { BottomNav } from "./ui/BottomNav";
 import { ErrorBoundary, useRetryableLazy } from "./ui/ErrorBoundary";
 import { Footer } from "./ui/Footer";
 import { Loading } from "./ui/Loading";
+import { Modal } from "./ui/Modal";
 import { MODE_KEY, parseMode, type AppMode } from "./ui/mode";
 import { MoreScreen } from "./ui/MoreScreen";
 import { TopBar } from "./ui/TopBar";
@@ -23,6 +25,7 @@ const loadBots = () => import("./ui/bots/BotsScreen").then((m) => ({ default: m.
 const loadTokenomics = () => import("./ui/tokenomics/TokenomicsScreen").then((m) => ({ default: m.TokenomicsScreen }));
 const loadMine = () => import("./ui/mine/MineScreen").then((m) => ({ default: m.MineScreen }));
 const loadReferrals = () => import("./ui/referrals/ReferralsScreen").then((m) => ({ default: m.ReferralsScreen }));
+const loadIntro = () => import("./ui/intro/IntroModal").then((m) => ({ default: m.IntroModal }));
 
 /** "markets", "positions" and "more" are phone screens (the bottom bar); a wide screen shows them as Trade. */
 export type Tab = TradeView | "rewards" | "explore" | "bots" | "tokenomics" | "referrals" | "more";
@@ -58,6 +61,13 @@ export function App({ config }: { config: AppConfig }) {
     browserKV.setItem(MODE_KEY, m);
   };
   const [LazyScreen, retry] = mine ? mineScreen : isLazy(tab) ? lazy[tab] : [null, undefined];
+  // The first-visit intro: once per browser, on mainnet; Skip, Start, ✕ or Escape all mark it seen.
+  const [intro, setIntro] = useState(() => showIntro(config.network, browserKV.getItem(INTRO_KEY)));
+  const [Intro, retryIntro] = useRetryableLazy(loadIntro);
+  const closeIntro = () => {
+    setIntro(false);
+    browserKV.setItem(INTRO_KEY, INTRO_SEEN);
+  };
   return (
     <ConfigProvider value={config}>
       <SessionProvider>
@@ -87,6 +97,14 @@ export function App({ config }: { config: AppConfig }) {
                 </main>
                 <Footer />
                 {narrow && !mine && <BottomNav tab={tab} onTab={setTab} />}
+                {intro && (
+                  // Nothing shows while the chunk loads; a failed load offers Try again in a dialog that can be closed.
+                  <ErrorBoundary scope="screen" network={config.network} onRetry={retryIntro} frame={(body) => <Modal title={INTRO_TITLE} onClose={closeIntro}>{body}</Modal>}>
+                    <Suspense fallback={null}>
+                      <Intro onClose={closeIntro} />
+                    </Suspense>
+                  </ErrorBoundary>
+                )}
               </div>
             </AccountProvider>
           </TradingProvider>

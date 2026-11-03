@@ -14,6 +14,7 @@ vi.mock("../src/ui/useNarrow", () => ({ useNarrow: () => narrow.value }));
 vi.mock("../src/ui/trade/TradeScreen", () => ({ TradeScreen: () => <p>the trade screen</p> }));
 vi.mock("../src/ui/mine/MineScreen", () => ({ MineScreen: () => <p>the mine screen</p> }));
 vi.mock("../src/ui/BottomNav", () => ({ BottomNav: () => <nav>the bottom bar</nav> }));
+vi.mock("../src/ui/intro/IntroModal", () => ({ IntroModal: ({ onClose }: { onClose(): void }) => <button onClick={onClose}>the intro</button> }));
 vi.mock("../src/ui/TopBar", () => ({
   TopBar: ({ mode, onMode }: { mode: string; onMode(m: string): void }) => <button onClick={() => onMode(mode === "mine" ? "full" : "mine")}>switch from {mode}</button>,
 }));
@@ -66,5 +67,25 @@ describe("the Trade | Mine switch", () => {
     vi.stubGlobal("location", { ...window.location, pathname: "/bots", search: "" });
     render(<App config={config} />);
     expect(screen.getByText("switch from full")).toBeTruthy();
+  });
+});
+
+describe("the first-visit intro", () => {
+  const mainnet = { network: "mainnet" } as AppConfig;
+  it("shows on a first mainnet visit; closing it is kept, so it never shows again", async () => {
+    const { unmount } = render(<App config={mainnet} />);
+    fireEvent.click(await screen.findByText("the intro"));
+    expect(screen.queryByText("the intro")).toBeNull();
+    expect(localStorage.getItem("hlo:intro")).toBe("seen");
+    unmount();
+    render(<App config={mainnet} />);
+    expect(screen.getByText("the trade screen")).toBeTruthy();
+    expect(screen.queryByText("the intro")).toBeNull();
+  });
+  it("not on testnet", async () => {
+    render(<App config={config} />);
+    await new Promise((r) => setTimeout(r, 50)); // time for a lazy intro to have loaded, had it been asked for
+    expect(screen.queryByText("the intro")).toBeNull();
+    expect(localStorage.getItem("hlo:intro")).toBeNull();
   });
 });
