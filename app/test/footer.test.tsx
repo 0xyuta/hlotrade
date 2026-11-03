@@ -14,3 +14,12 @@ describe("Footer TradingView attribution", () => {
     expect(a?.textContent).toBe("https://www.tradingview.com/");
   });
 });
+
+describe("Footer X link", () => {
+  it("links to HLO's X account", () => {
+    const { getByRole } = render(<Footer />);
+    const a = getByRole("link", { name: "HLO on X" });
+    expect(a.getAttribute("href")).toBe("https://x.com/hlotrade");
+    expect(a.getAttribute("target")).toBe("_blank");
+  });
+});

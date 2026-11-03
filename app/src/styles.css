@@ -71,6 +71,8 @@ a { color: var(--brand); }
 .topbar-actions { margin-left: auto; display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; min-width: 0; }
 .main { flex: 1; padding: 16px 20px; max-width: 1400px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 .footer { padding: 14px 20px; color: var(--faint); font-size: 12px; display: flex; flex-wrap: wrap; gap: 14px; border-top: 1px solid var(--line); }
+.footer-x { margin-left: auto; display: inline-flex; align-items: center; color: var(--muted); }
+.footer-x:hover { color: var(--text); }
 
 /* cards */
 .card { background: var(--card); border-radius: var(--radius); padding: 16px; }
