@@ -95,7 +95,7 @@ describe("tokenomicsSections", () => {
         lines: [
           "A 0.1% builder fee on every trade: 90% goes to the buyback and 10% to the team.",
           "Until the trading pool opens (7 days and 1 hour after launch), the buyback only collects USDC. All of it goes into the pool with the 10,000 HLO, locked forever.",
-          "After that, every 10 minutes the buyback spends a 1/144 slice of its USDC on HLO. 90% of the HLO it buys is burned and 10% goes to stakers.",
+          "After that, the buyback can spend a 1/144 slice of its USDC on HLO every 10 minutes. Anyone can start a buy, and HLO's keeper does once a buy would spend at least $10. 90% of the HLO it buys is burned and 10% goes to stakers.",
         ],
       },
     ]);

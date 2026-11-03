@@ -26,6 +26,8 @@ export interface Config {
   registryDir?: string;
   /** A minute is settled on chain this many minutes after it ends. */
   settleAfterMinutes: number;
+  /** The keeper sends buy() only when it would spend at least this much USDC (1e6); 0 buys any slice. */
+  minBuy: bigint;
   /** Seconds past a minute's end before the poster lists the registry for it. */
   checkpointGraceSeconds: number;
   /** Follow Hyperliquid's public trades feed to read only the wallets that traded (spec 2026-10-31 §4). On by default except on anvil; never off on mainnet. */
@@ -188,6 +190,7 @@ export function loadConfig(env: Record<string, string | undefined>): Config {
     rewardsUrl,
     registryDir,
     settleAfterMinutes: integer(env, "SETTLE_AFTER_MINUTES", "60", 1),
+    minBuy: decimal(get("MIN_BUY_USD", "0"), 6, "MIN_BUY_USD"),
     checkpointGraceSeconds: integer(env, "CHECKPOINT_GRACE_SECONDS", "10", 0),
     tradeFeed,
     hlFillsPerMinute: integer(env, "HL_FILLS_PER_MINUTE", "50", 1),

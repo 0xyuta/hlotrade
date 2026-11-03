@@ -9,7 +9,7 @@ import { Keeper, newestRound, nextKeeperStep, settleDue, settleSleep, sleepFor, 
 
 const v = (o: Partial<KeeperView>): KeeperView => ({
   now: 1_000_000n, poolOpen: false, openAt: 900_000n, usdcHeld: 45_000_000n, slice: 0n, lastBuy: 0n,
-  buyInterval: 600n, lastTry: null, hype: 10n ** 18n, minHype: 5n * 10n ** 16n, ...o,
+  buyInterval: 600n, lastTry: null, hype: 10n ** 18n, minHype: 5n * 10n ** 16n, minBuy: 0n, ...o,
 });
 
 describe("nextKeeperStep", () => {
@@ -42,6 +42,14 @@ describe("nextKeeperStep", () => {
   });
   it("nothing to spend is idle", () => {
     expect(nextKeeperStep(v({ poolOpen: true, slice: 125_000n, usdcHeld: 0n })).kind).toBe("idle");
+  });
+  it("does not buy when buy() would spend under MIN_BUY_USD (the slice, or all that is left when that is less)", () => {
+    const open = { poolOpen: true, lastBuy: 999_400n, minBuy: 10_000_000n };
+    const s = nextKeeperStep(v({ ...open, slice: 9_999_999n }));
+    expect(s.kind === "idle" && s.why).toContain("MIN_BUY_USD");
+    expect(nextKeeperStep(v({ ...open, slice: 10_000_000n }))).toEqual({ kind: "buy" });
+    expect(nextKeeperStep(v({ ...open, slice: 20_000_000n, usdcHeld: 9_000_000n })).kind).toBe("idle");
+    expect(nextKeeperStep(v({ ...open, slice: 20_000_000n, usdcHeld: 10_000_000n }))).toEqual({ kind: "buy" });
   });
   it("low gas stops before sending", () => {
     expect(nextKeeperStep(v({ hype: 1n }))).toEqual({ kind: "lowGas" });

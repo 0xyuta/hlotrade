@@ -138,6 +138,11 @@ describe("minute-settlement config", () => {
     expect(() => registrySource(loadConfig({ ...base, BLOB_READ_WRITE_TOKEN: "t" }), "poster")).toThrow("R2_* is required (or REGISTRY_DIR) for the poster");
     expect(() => registrySource(loadConfig(base), "verifier")).toThrow("for the verifier");
   });
+  it("MIN_BUY_USD defaults to 0 (every slice); 10 means 10 USDC", () => {
+    expect(loadConfig(base).minBuy).toBe(0n);
+    expect(loadConfig({ ...base, MIN_BUY_USD: "10" }).minBuy).toBe(10_000_000n);
+    expect(() => loadConfig({ ...base, MIN_BUY_USD: "x" })).toThrow("MIN_BUY_USD");
+  });
   it("SETTLE_AFTER_MINUTES defaults to 60 (min 1); CHECKPOINT_GRACE_SECONDS to 10 (integer >= 0)", () => {
     const c = loadConfig(base);
     expect(c.settleAfterMinutes).toBe(60);

@@ -26,6 +26,8 @@ export const BUYBACK_PCT = 90;
 /** Buyback.BUY_INTERVAL in minutes, Buyback.SLICES, Buyback.BURN_BPS / 100. */
 export const BUY_EVERY_MINUTES = 10;
 export const BUY_SLICES = 144;
+/** Not a contract rule: the mainnet keeper's MIN_BUY_USD (~/.hlo-mainnet/ops-env/keeper.env). Anyone may call buy() for less. */
+export const KEEPER_MIN_BUY_USD = 10;
 export const BURN_PCT = 90;
 /**
  * When the trading pool opens: Buyback.OPEN_DELAY (7 days) after Buyback.launchTime, which Deploy.s.sol sets to

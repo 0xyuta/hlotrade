@@ -1,7 +1,7 @@
 import { BUILDER_FEE_RATE } from "../hl/math";
 import { fmtHlo } from "../ui/format";
 import {
-  BURN_PCT, BUYBACK_PCT, BUY_EVERY_MINUTES, BUY_SLICES, CLAIM_CAP, CLAIM_PAID_PCT, CLAIM_PER_HOUR, MAX_SUPPLY, POOL_OPEN_DAYS,
+  BURN_PCT, BUYBACK_PCT, BUY_EVERY_MINUTES, BUY_SLICES, CLAIM_CAP, KEEPER_MIN_BUY_USD, CLAIM_PAID_PCT, CLAIM_PER_HOUR, MAX_SUPPLY, POOL_OPEN_DAYS,
   POOL_OPEN_EXTRA_HOURS, POOL_SEED, TRADER_PER_MINUTE, VAULT_PAY_PCT, VAULT_PER_MINUTE,
 } from "./constants";
 import { notAvailableText, popOftenText } from "./view";
@@ -65,7 +65,7 @@ export function tokenomicsSections(odds: number): TokenomicsSection[] {
       lines: [
         `A ${builderFeeText()} builder fee on every trade: ${BUYBACK_PCT}% goes to the buyback and ${100 - BUYBACK_PCT}% to the team.`,
         `Until the trading pool opens (${poolOpensText()}), the buyback only collects USDC. All of it goes into the pool with the ${hlo(POOL_SEED)}, locked forever.`,
-        `After that, every ${BUY_EVERY_MINUTES} minutes the buyback spends a 1/${BUY_SLICES} slice of its USDC on HLO. ${BURN_PCT}% of the HLO it buys is burned and ${100 - BURN_PCT}% goes to stakers.`,
+        `After that, the buyback can spend a 1/${BUY_SLICES} slice of its USDC on HLO every ${BUY_EVERY_MINUTES} minutes. Anyone can start a buy, and HLO's keeper does once a buy would spend at least $${KEEPER_MIN_BUY_USD}. ${BURN_PCT}% of the HLO it buys is burned and ${100 - BURN_PCT}% goes to stakers.`,
       ],
     },
   ];

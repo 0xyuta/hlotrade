@@ -18,6 +18,7 @@ export interface KeeperView {
   lastTry: bigint | null; // chain time of this keeper's last buy() that did not execute (a skip)
   hype: bigint; // keeper's gas balance (1e18)
   minHype: bigint;
+  minBuy: bigint; // MIN_BUY_USD (1e6): the least a buy() may spend
 }
 
 export type KeeperStep =
@@ -89,6 +90,8 @@ export function nextKeeperStep(v: KeeperView): KeeperStep {
   }
   if (v.slice === 0n) return { kind: "idle", why: "slice is 0: buying starts after the next fee deposit" };
   if (v.usdcHeld === 0n) return { kind: "idle", why: "no USDC left to spend" };
+  const spend = v.slice > v.usdcHeld ? v.usdcHeld : v.slice; // what buy() spends: the slice, or all that is left
+  if (spend < v.minBuy) return { kind: "idle", why: "a buy would spend under MIN_BUY_USD" };
   let due = v.lastBuy + v.buyInterval;
   if (v.lastTry !== null && v.lastTry + v.buyInterval > due) due = v.lastTry + v.buyInterval;
   if (v.now < due) return { kind: "wait", until: due, why: "buy interval" };
@@ -142,7 +145,7 @@ export class Keeper {
     ]);
     return {
       now: BigInt(head.timestamp), poolOpen, openAt: launch + delay, usdcHeld, slice, lastBuy, buyInterval,
-      lastTry: this.lastTry, hype, minHype: this.ctx.cfg.forward.minHype,
+      lastTry: this.lastTry, hype, minHype: this.ctx.cfg.forward.minHype, minBuy: this.ctx.cfg.minBuy,
     };
   }
 
