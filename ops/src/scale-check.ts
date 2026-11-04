@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { getHeapStatistics } from "node:v8";
 import { gzipSync } from "node:zlib";
-import { applyCheckpoint, buildTree, deserializeState, newCalcState, popMinimum, popOdds, serializeState, type Addr, type FeeRow, type Seed } from "@hlo/calc";
+import { applyCheckpoint, buildTree, deserializeState, newCalcState, popMinimum, popOdds, quietMinuteFrom, serializeState, type Addr, type FeeRow, type Seed } from "@hlo/calc";
 import type { Address, Hex } from "viem";
 import { buildFiles, buildUserFiles, LATEST_PATH } from "./checkpoint-files.js";
 import { toJson } from "./publish.js";
@@ -37,7 +37,7 @@ console.log(`${WALLETS} wallets (heap limit ${mb(getHeapStatistics().heap_size_l
 const state = newCalcState(LAUNCH, popOdds(CHAIN));
 // Minute 0: every wallet trades.
 const rows: FeeRow[] = Array.from({ length: WALLETS }, (_, i) => ({ minute: 0, user: addr(i + 1), fee: 100_000_000n + BigInt(i) }));
-const result = timed("applyCheckpoint (minute 0, every wallet trades)", () => applyCheckpoint(state, { minimum: popMinimum(CHAIN), throughMinute: 0, refBlock: 2n, rows, seeds: [seed(0)], burned: 0n, refined: 0n, claimed: new Map() }));
+const result = timed("applyCheckpoint (minute 0, every wallet trades)", () => applyCheckpoint(state, { minimum: popMinimum(CHAIN), quietFrom: quietMinuteFrom(CHAIN), throughMinute: 0, refBlock: 2n, rows, seeds: [seed(0)], burned: 0n, refined: 0n, claimed: new Map() }));
 const tree = timed("buildTree", () => buildTree(result.entitlements));
 timed("all proofs", () => tree.proofs);
 const args = { chainId: CHAIN, contract: CONTRACT, throughMinute: 0, refBlock: 2n, sig: SIG, publishedAt: LAUNCH + 70, rows: [], result, tree, pops: [] };
@@ -52,7 +52,7 @@ console.log(`user files: ${files.size}; largest ${mb(Math.max(...bodies.map((b) 
 const second: FeeRow[] = Array.from({ length: Math.min(TRADERS, WALLETS) }, (_, i) => ({ minute: 1, user: addr(i + 1), fee: 50_000_000n }));
 const claimed = new Map<Addr, bigint>(Array.from({ length: Math.min(TRADERS, WALLETS) }, (_, i) => [addr(i + 1), 1n] as const));
 const copy = timed("state copy (serialize + deserialize, as the poster does each minute)", () => deserializeState(serializeState(state)));
-const result2 = timed(`applyCheckpoint (minute 1, ${second.length} wallets trade, refining over all)`, () => applyCheckpoint(copy, { minimum: popMinimum(CHAIN), throughMinute: 1, refBlock: 3n, rows: second, seeds: [seed(1)], burned: 0n, refined: 10n ** 18n, claimed }));
+const result2 = timed(`applyCheckpoint (minute 1, ${second.length} wallets trade, refining over all)`, () => applyCheckpoint(copy, { minimum: popMinimum(CHAIN), quietFrom: quietMinuteFrom(CHAIN), throughMinute: 1, refBlock: 3n, rows: second, seeds: [seed(1)], burned: 0n, refined: 10n ** 18n, claimed }));
 const tree2 = timed("buildTree", () => buildTree(result2.entitlements));
 console.log(`root ${tree2.root.slice(0, 10)}…, ${tree2.leaves} leaves`);
 

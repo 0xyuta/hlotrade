@@ -8,7 +8,7 @@ Wording rule: it is **the vault**, and it **pops**. Never say jackpot, lottery, 
 
 | | |
 |---|---|
-| Vault | Gains 0.1 HLO every minute, plus the 1 HLO of any minute nobody traded, plus rounding dust (unchanged) |
+| Vault | Gains 0.1 HLO every minute, plus the 1 HLO of any minute nobody traded, plus rounding dust (unchanged). Changed 2026-11-04 (spec `2026-11-04-hlo-quiet-minutes-design.md`): from `quietMinuteFrom(chainId)` on, a minute nobody trades mines nothing, so the vault gains only the 0.1 |
 | Points | 1 point per $1,000 traded with our builder fee, i.e. 1 point per $1 of builder fee. Counted from the last pop |
 | Pop | Every minute the vault pops with a 1 in `ODDS` chance. `ODDS` = 1,250 on mainnet (about once every 21 hours) |
 | Minimum | Added 2026-11-01 at the owner's request: a wallet needs at least 1 point since the last pop to share in a pop, so one tiny trade in a quiet stretch cannot take the vault (`popMinimum(chainId)`: 999 from launch, 998 from minute 2600, off on anvil) |

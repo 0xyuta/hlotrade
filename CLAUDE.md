@@ -1,6 +1,6 @@
 # CLAUDE.md — HLO
 
-HLO is a Hyperliquid perps trading app that charges a 0.1% builder fee and returns fees to users through the HLO token. Mining lives in HyperEVM contracts. The design is in `docs/superpowers/specs/2026-10-27-hlo-design.md` and, for minute settlement (Plan 5), `docs/superpowers/specs/2026-10-29-hlo-minute-settlement-design.md` and, for the vault pops (Plan 9), `docs/superpowers/specs/2026-10-30-hlo-vault-pop-design.md` and, for fee counting and the rewards files at 100,000 wallets (Plan 11), `docs/superpowers/specs/2026-10-31-hlo-scale-design.md`.
+HLO is a Hyperliquid perps trading app that charges a 0.1% builder fee and returns fees to users through the HLO token. Mining lives in HyperEVM contracts. The design is in `docs/superpowers/specs/2026-10-27-hlo-design.md` and, for minute settlement (Plan 5), `docs/superpowers/specs/2026-10-29-hlo-minute-settlement-design.md` and, for the vault pops (Plan 9), `docs/superpowers/specs/2026-10-30-hlo-vault-pop-design.md` and, for fee counting and the rewards files at 100,000 wallets (Plan 11), `docs/superpowers/specs/2026-10-31-hlo-scale-design.md` and, for minutes nobody trades, `docs/superpowers/specs/2026-11-04-hlo-quiet-minutes-design.md`.
 
 - Wording rule: it is **the vault**, and it **pops** (1 in `popOdds(chainId)` each minute: 1,250 on 999, 60 on 998, 1 on anvil; spec `docs/superpowers/specs/2026-10-30-hlo-vault-pop-design.md`). Never say "jackpot", "lottery", "prize", "motherlode" or "win".
 
@@ -42,7 +42,7 @@ Gotchas:
 | `src/units.ts` | constants (DAY, MINUTE, HLO, MAX_SUPPLY, POOL_RESERVE, TRADER_PER_MINUTE, VAULT_PER_MINUTE), `parseFeeUnits`, `dayOf`, `yyyymmdd` |
 | `src/apifills.ts` | `ApiFill` (`userFillsByTime`), `countedFee` (the counting rule), `minuteOf`, `feesByMinute` |
 | `src/checkpoint.ts` | `applyCheckpoint` / `newCalcState(launchTime, odds)`: per-minute emission, supply room, refining, vault points and pops (one `seeds` entry per minute); `serializeState` (version 2) |
-| `src/pop.ts` | `Seed`, `popOdds(chainId)` (999 → 1250, 998 → 60, 31337 → 1), `popsAt(hash, minute, odds)`, `popMinimum(chainId)` (the 1 point a wallet needs to share in a pop: 999 from launch, 998 from minute 2600, off on anvil) |
+| `src/pop.ts` | `Seed`, `popOdds(chainId)` (999 → 1250, 998 → 60, 31337 → 1), `popsAt(hash, minute, odds)`, `popMinimum(chainId)` (the 1 point a wallet needs to share in a pop: 999 from launch, 998 from minute 2600, off on anvil), `quietMinuteFrom(chainId)` (from then on a minute nobody trades mines nothing: 999 from minute 2220, 998 never, anvil from launch) |
 | `src/table.ts` | the fee table CSV: `FeeRow`, `tableCsv`, `parseTableCsv` |
 | `src/merkle.ts` | `buildTree` (adds the sentinel leaf; the proofs are computed when `tree.proofs` is first read, and there is no dump), `verifyProof` |
 | `src/fills.ts` | `decodeLz4`, `parseFills` (Hyperliquid's daily builder CSV, columns by header name), `isCorePerp`; used by the verifier's daily check |
@@ -54,7 +54,7 @@ npm test -w calc
 
 Gotchas:
 - Every token or fee amount is a `bigint`. Fees are in **1e-8 USDC** (Hyperliquid's `builder_fee` precision). `launchTime` comes from the chain, never from a local clock.
-- A minute's fees are its counted API fills; checkpoints are never revised; the pop odds come from `popOdds(chainId)` and each minute's seed block from the chain (`ops/src/seed.ts`); the vault keeps 10% of every pop. A pop pays only wallets with at least 1 point since the last pop, and every point resets. The minimum is part of the replay: changing it after launch makes a fresh verifier disagree, so a change needs a `fromMinute`, as on 998.
+- A minute's fees are its counted API fills; checkpoints are never revised; the pop odds come from `popOdds(chainId)` and each minute's seed block from the chain (`ops/src/seed.ts`); the vault keeps 10% of every pop. A pop pays only wallets with at least 1 point since the last pop, and every point resets. The minimum is part of the replay: changing it after launch makes a fresh verifier disagree, so a change needs a `fromMinute`, as on 998. The same holds for `quietMinuteFrom` (999 switched at minute 2220): a minute nobody trades mines nothing, so the vault gains only its 0.1 HLO.
 - Every tree has the sentinel leaf `(0x0…0, 0)`, so an empty checkpoint still has a root. It gets no proof file.
 
 ## Ops (`ops/`, four processes)

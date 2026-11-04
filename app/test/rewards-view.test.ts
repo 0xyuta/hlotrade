@@ -49,7 +49,7 @@ describe("pointsNeededText", () => {
 describe("vaultRuleText", () => {
   it("mainnet: 1 in 1,250, about once every 21 hours", () =>
     expect(vaultRuleText(1250)).toBe(
-      "0.1 HLO goes in every minute, plus any minute nobody traded. Every minute it has a 1 in 1,250 chance to pop (about once every 21 hours). When it pops, 90% is shared by points among wallets with at least 1 point and 10% stays for the next round. 1 point per $1,000 traded.",
+      "0.1 HLO goes in every minute. Every minute it has a 1 in 1,250 chance to pop (about once every 21 hours). When it pops, 90% is shared by points among wallets with at least 1 point and 10% stays for the next round. 1 point per $1,000 traded.",
     ));
   it("testnet: 1 in 60, about once an hour", () => expect(vaultRuleText(60)).toContain("a 1 in 60 chance to pop (about once an hour)"));
   it("never a gambling word", () => {

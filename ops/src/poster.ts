@@ -1,5 +1,5 @@
 import {
-  applyCheckpoint, buildTree, deserializeState, newCalcState, popMinimum, popOdds, serializeState, type CalcState, type Seed,
+  applyCheckpoint, buildTree, deserializeState, newCalcState, popMinimum, popOdds, quietMinuteFrom, serializeState, type CalcState, type Seed,
 } from "@hlo/calc";
 import type { Address, Hex } from "viem";
 import {
@@ -293,7 +293,7 @@ export class Poster {
     // Work on a copy: nothing in memory moves until the write-ahead file is on disk.
     const next = deserializeState(serializeState(this.state));
     const rows = d.ingest.rows(M, M);
-    const result = applyCheckpoint(next, { throughMinute: M, refBlock, rows, seeds, burned: snap.burned, refined: snap.refined, claimed: snap.claimed, minimum: popMinimum(d.chainId) });
+    const result = applyCheckpoint(next, { throughMinute: M, refBlock, rows, seeds, burned: snap.burned, refined: snap.refined, claimed: snap.claimed, minimum: popMinimum(d.chainId), quietFrom: quietMinuteFrom(d.chainId) });
     const tree = buildTree(result.entitlements);
     await d.checkSigner();
     const sig = await d.sign({ throughMinute: M, refBlock, root: tree.root, totalEntitled: result.totalEntitled });

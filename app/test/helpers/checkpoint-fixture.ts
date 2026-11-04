@@ -31,7 +31,7 @@ export async function makeLatest(opts: { signer?: typeof FIX_POSTER_ACCOUNT; thr
   const rows: FeeRow[] = [];
   for (let m = 0; m <= through; m++) FIX_USERS.forEach((u, i) => rows.push({ minute: m, user: u as Addr, fee: BigInt((i + 1) * 100_000_000 + m) }));
   const seeds = seedsFor(0, through, { odds, pop: [FIX_POP_MINUTE], block: (m) => 70n + BigInt(m) });
-  const result = applyCheckpoint(state, { minimum: { fromMinute: 0, units: 0n }, throughMinute: through, refBlock: FIX_REF_BLOCK, rows, seeds, burned: 0n, refined: 0n, claimed: new Map() });
+  const result = applyCheckpoint(state, { minimum: { fromMinute: 0, units: 0n }, quietFrom: null, throughMinute: through, refBlock: FIX_REF_BLOCK, rows, seeds, burned: 0n, refined: 0n, claimed: new Map() });
   const tree = buildTree(result.entitlements);
   const cp = { throughMinute: through, refBlock: FIX_REF_BLOCK, root: tree.root as Hex, totalEntitled: result.totalEntitled };
   const sig = await signCheckpoint(opts.signer ?? FIX_POSTER_ACCOUNT, FIX_CHAIN_ID, FIX_CONTRACT, cp);

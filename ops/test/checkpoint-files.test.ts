@@ -21,7 +21,7 @@ const LAUNCH = 1_800_000_000;
 function args(): BuildArgs {
   const s = newCalcState(LAUNCH, popOdds(998));
   const rows: FeeRow[] = [{ minute: 0, user: A, fee: 100n }, { minute: 1, user: A, fee: 100n }, { minute: 1, user: B, fee: 300n }];
-  const result = applyCheckpoint(s, { minimum: { fromMinute: 0, units: 0n }, throughMinute: 1, refBlock: 10n, rows, seeds: seedsFor(0, 1, { odds: 60 }), burned: 0n, refined: 0n, claimed: new Map() });
+  const result = applyCheckpoint(s, { minimum: { fromMinute: 0, units: 0n }, quietFrom: null, throughMinute: 1, refBlock: 10n, rows, seeds: seedsFor(0, 1, { odds: 60 }), burned: 0n, refined: 0n, claimed: new Map() });
   const tree = buildTree(result.entitlements);
   return {
     chainId: 998, contract: CONTRACT, throughMinute: 1, refBlock: 10n, sig: SIG, publishedAt: LAUNCH + 130, rows, result, tree,
@@ -200,7 +200,7 @@ function userArgs(): BuildArgs {
   const s = newCalcState(LAUNCH, popOdds(998));
   const rows: FeeRow[] = [W1, W2, W3, W4].map((user, i) => ({ minute: 1, user, fee: BigInt(100 * (i + 1)) }));
   const a = args();
-  const result = applyCheckpoint(s, { minimum: { fromMinute: 0, units: 0n }, throughMinute: 1, refBlock: 10n, rows, seeds: seedsFor(0, 1, { odds: 60 }), burned: 0n, refined: 0n, claimed: new Map() });
+  const result = applyCheckpoint(s, { minimum: { fromMinute: 0, units: 0n }, quietFrom: null, throughMinute: 1, refBlock: 10n, rows, seeds: seedsFor(0, 1, { odds: 60 }), burned: 0n, refined: 0n, claimed: new Map() });
   result.points.set(PTS, 5n);
   result.totals.set(PTS, { fees: 5n, mined: 0n, fromVault: 0n, refined: 0n });
   result.totals.set(TOT, { fees: 9n, mined: 0n, fromVault: 0n, refined: 0n });
@@ -305,7 +305,7 @@ describe("buildUserFiles", () => {
 
   it("an empty checkpoint has no files", () => {
     const s = newCalcState(LAUNCH, popOdds(998));
-    const result = applyCheckpoint(s, { minimum: { fromMinute: 0, units: 0n }, throughMinute: 0, refBlock: 10n, rows: [], seeds: seedsFor(0, 0, { odds: 60 }), burned: 0n, refined: 0n, claimed: new Map() });
+    const result = applyCheckpoint(s, { minimum: { fromMinute: 0, units: 0n }, quietFrom: null, throughMinute: 0, refBlock: 10n, rows: [], seeds: seedsFor(0, 0, { odds: 60 }), burned: 0n, refined: 0n, claimed: new Map() });
     expect(buildUserFiles({ ...args(), throughMinute: 0, rows: [], result, tree: buildTree(result.entitlements) }).size).toBe(0);
   });
 

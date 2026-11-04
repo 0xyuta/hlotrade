@@ -81,7 +81,7 @@ export function tokenomicsSections(odds: number): TokenomicsSection[] {
       title: "Mining, every minute",
       lines: [
         `${hlo(TRADER_PER_MINUTE)} goes to that minute's traders, shared by the builder fees they paid.`,
-        `A minute nobody trades sends its ${hlo(TRADER_PER_MINUTE)} to the vault.`,
+        `A minute nobody trades mines nothing: its ${hlo(TRADER_PER_MINUTE)} is never made.`,
       ],
     },
     {

@@ -29,7 +29,7 @@ describe("emission accounting", () => {
           let popCount = 0;
           let last;
           for (const end of ends) {
-            last = applyCheckpoint(s, { minimum: MINIMUM,
+            last = applyCheckpoint(s, { minimum: MINIMUM, quietFrom: null,
               throughMinute: end, refBlock: 1n, rows: rows.filter((r) => r.minute >= from && r.minute <= end),
               seeds: seedsFor(from, end, { odds: ODDS, pop }), burned: 0n, refined: 0n, claimed: new Map(),
             });
@@ -42,6 +42,47 @@ describe("emission accounting", () => {
           expect(toTraders + popped + last!.vault).toBe(30n * 11n * 10n ** 17n);
           expect(last!.totalEntitled).toBe(toTraders + popped);
           expect(popCount).toBe(pop.length);
+        },
+      ),
+    );
+  });
+});
+
+describe("minutes nobody trades (spec 2026-11-04)", () => {
+  it("from quietFrom on, a minute without fees adds only 0.1 HLO; the money still adds up, however the minutes are split", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.tuple(fc.integer({ min: 0, max: 29 }), fc.integer({ min: 0, max: 2 }), fc.bigInt({ min: 1n, max: 10n ** 9n })), { maxLength: 20 }),
+        fc.array(fc.integer({ min: 0, max: 29 }), { maxLength: 6 }),
+        popBits,
+        fc.integer({ min: 0, max: 31 }),
+        (raw, cuts, bits, quietFrom) => {
+          const rows: FeeRow[] = raw.map(([minute, u, fee]) => ({ minute, user: USERS[u], fee }));
+          const pop = popList(bits);
+          const ends = [...new Set([...cuts, 29])].sort((a, b) => a - b);
+          const s = newCalcState(0, ODDS);
+          let from = 0;
+          let toTraders = 0n;
+          let popped = 0n;
+          let emitted = 0n;
+          let last;
+          for (const end of ends) {
+            last = applyCheckpoint(s, {
+              minimum: MINIMUM, quietFrom, throughMinute: end, refBlock: 1n, rows: rows.filter((r) => r.minute >= from && r.minute <= end),
+              seeds: seedsFor(from, end, { odds: ODDS, pop }), burned: 0n, refined: 0n, claimed: new Map(),
+            });
+            toTraders += last.toTraders;
+            emitted += last.emitted;
+            popped += last.pops.reduce((a, p) => a + p.amount, 0n);
+            from = end + 1;
+          }
+          const traded = new Set(rows.map((r) => r.minute));
+          let want = 0n;
+          for (let m = 0; m < 30; m++) want += m >= quietFrom && !traded.has(m) ? 10n ** 17n : 11n * 10n ** 17n;
+          expect(emitted).toBe(want);
+          expect(s.emitted).toBe(want);
+          expect(toTraders + popped + last!.vault).toBe(want);
+          expect(last!.totalEntitled).toBe(toTraders + popped);
         },
       ),
     );
@@ -70,9 +111,9 @@ describe("two checkpoints from a random starting state", () => {
           const pop = popList(bits);
           const s = newCalcState(0, ODDS);
           s.emitted = MAX_SUPPLY - POOL_RESERVE - headroom;
-          const r1 = applyCheckpoint(s, { minimum: MINIMUM, throughMinute: cut, refBlock: 1n, rows: rows.filter((r) => r.minute <= cut), seeds: seedsFor(0, cut, { odds: ODDS, pop }), burned: burned1, refined: refined1, claimed: toMap(claimed1) });
+          const r1 = applyCheckpoint(s, { minimum: MINIMUM, quietFrom: null, throughMinute: cut, refBlock: 1n, rows: rows.filter((r) => r.minute <= cut), seeds: seedsFor(0, cut, { odds: ODDS, pop }), burned: burned1, refined: refined1, claimed: toMap(claimed1) });
           const burned2 = burned1 + extraBurn;
-          const r2 = applyCheckpoint(s, { minimum: MINIMUM, throughMinute: 29, refBlock: 2n, rows: rows.filter((r) => r.minute > cut), seeds: seedsFor(cut + 1, 29, { odds: ODDS, pop }), burned: burned2, refined: refined2, claimed: toMap(claimed2) });
+          const r2 = applyCheckpoint(s, { minimum: MINIMUM, quietFrom: null, throughMinute: 29, refBlock: 2n, rows: rows.filter((r) => r.minute > cut), seeds: seedsFor(cut + 1, 29, { odds: ODDS, pop }), burned: burned2, refined: refined2, claimed: toMap(claimed2) });
 
           // (a) each checkpoint emits 1.1 HLO a minute until the supply room (cap - reserve + burned) runs out, counted from the starting emission
           const perMinute = HLO + HLO / 10n;

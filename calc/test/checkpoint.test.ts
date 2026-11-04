@@ -14,10 +14,61 @@ const row = (minute: number, user: `0x${string}`, fee: bigint): FeeRow => ({ min
 /** The next checkpoint for `s` through `throughMinute`, with seeds for exactly its minutes that pop at `pop`. */
 const input = (s: CalcState, o: Partial<CheckpointInput> & { throughMinute: number; pop?: number[] }): CheckpointInput => {
   const { pop, ...rest } = o;
-  return { refBlock: 10n, rows: [], burned: 0n, refined: 0n, claimed: new Map(), minimum: NO_MINIMUM, seeds: seedsFor(s.nextMinute, o.throughMinute, { odds: s.odds, pop }), ...rest };
+  return { refBlock: 10n, rows: [], burned: 0n, refined: 0n, claimed: new Map(), minimum: NO_MINIMUM, quietFrom: null, seeds: seedsFor(s.nextMinute, o.throughMinute, { odds: s.odds, pop }), ...rest };
 };
 /** For inputs whose minute range is itself the fault (no seeds can be built for it). */
-const RAW = { refBlock: 10n, rows: [], burned: 0n, refined: 0n, claimed: new Map(), minimum: NO_MINIMUM, seeds: [] };
+const RAW = { refBlock: 10n, rows: [], burned: 0n, refined: 0n, claimed: new Map(), minimum: NO_MINIMUM, quietFrom: null, seeds: [] };
+
+describe("minutes nobody trades (spec 2026-11-04)", () => {
+  it("before quietFrom an empty minute sends its 1 HLO to the vault; from quietFrom on it is never made", () => {
+    const s = newCalcState(0, ODDS);
+    const r = applyCheckpoint(s, input(s, { throughMinute: 3, quietFrom: 2 }));
+    // m0, m1: 1 + 0.1 each into the vault. m2, m3: only the 0.1.
+    expect(r.emitted).toBe(24n * E);
+    expect(r.toVault).toBe(24n * E);
+    expect(r.vault).toBe(24n * E);
+    expect(s.emitted).toBe(24n * E);
+    expect(r.totalEntitled).toBe(0n);
+  });
+
+  it("a minute with a trader is unchanged: the trader gets the 1 HLO, the vault the 0.1", () => {
+    const s = newCalcState(0, ODDS);
+    const r = applyCheckpoint(s, input(s, { throughMinute: 2, quietFrom: 0, rows: [row(1, A, 5n)] }));
+    expect(r.entitlements.get(A)).toBe(10n * E);
+    expect(r.toTraders).toBe(10n * E);
+    expect(r.vault).toBe(3n * E);
+    expect(r.emitted).toBe(13n * E);
+  });
+
+  it("null keeps the launch rule", () => {
+    const s = newCalcState(0, ODDS);
+    expect(applyCheckpoint(s, input(s, { throughMinute: 1, quietFrom: null })).vault).toBe(22n * E);
+  });
+
+  it("a pop after quiet minutes shares a smaller vault", () => {
+    const s = newCalcState(0, ODDS);
+    const r = applyCheckpoint(s, input(s, { throughMinute: 2, quietFrom: 0, rows: [row(0, A, 100n)], pop: [2] }));
+    // m0: A 1 HLO, vault 0.1. m1, m2: 0.1 each → 0.3; it pops: A gets 0.27, 0.03 stays.
+    expect(r.pops).toEqual([{ minute: 2, block: 1002n, amount: (27n * E) / 10n, kept: (3n * E) / 10n, recipients: 1, pointsTotal: 100n }]);
+    expect(r.vault).toBe((3n * E) / 10n);
+  });
+
+  it("checkpoints split across quietFrom give the same state as one", () => {
+    const rows = [row(0, A, 3n), row(4, B, 7n)];
+    const one = newCalcState(0, ODDS);
+    applyCheckpoint(one, input(one, { throughMinute: 6, quietFrom: 3, rows, pop: [5] }));
+    const two = newCalcState(0, ODDS);
+    applyCheckpoint(two, input(two, { throughMinute: 2, quietFrom: 3, rows: rows.filter((r) => r.minute <= 2), pop: [5] }));
+    applyCheckpoint(two, input(two, { throughMinute: 6, quietFrom: 3, rows: rows.filter((r) => r.minute > 2), pop: [5] }));
+    expect(serializeState(two)).toBe(serializeState(one));
+  });
+
+  it("a quietFrom that is not a safe integer throws before touching the state", () => {
+    const s = newCalcState(0, ODDS);
+    expect(() => applyCheckpoint(s, input(s, { throughMinute: 0, quietFrom: 1.5 }))).toThrow(/quietFrom 1.5 is not a safe integer/);
+    expect(s.nextMinute).toBe(0);
+  });
+});
 
 describe("the minimum to share in a pop", () => {
   const ONE = 100_000_000n; // 1 point in fee units

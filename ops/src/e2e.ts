@@ -300,8 +300,8 @@ async function main() {
     const users3 = usersOf(latest3);
     const pop3 = latest3.pops[0];
     check(
-      pop3.minute === 3 && pop3.amount === "0" && pop3.recipients === 0 && pop3.kept === (BigInt(latest.vault.amount) + 11n * 10n ** 17n).toString(),
-      "minute 3 (nobody traded) popped with no points: it paid nothing and the vault kept everything, 1.1 HLO more",
+      pop3.minute === 3 && pop3.amount === "0" && pop3.recipients === 0 && pop3.kept === (BigInt(latest.vault.amount) + 10n ** 17n).toString(),
+      "minute 3 (nobody traded) popped with no points: it paid nothing and the vault kept everything, 0.1 HLO more (a minute nobody trades mines no trader HLO)",
     );
     check(BigInt(latest3.totalEntitled) >= BigInt(latest.totalEntitled), "totalEntitled did not decrease");
     // Claimed event -> tracker -> poster: minute 3 has no traders and #5 has claimed everything it had, so the whole refining pool

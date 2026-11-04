@@ -37,7 +37,7 @@ export function popOftenText(odds: number): string {
 
 /** The Vault card's rule (spec 2026-10-30 §4), from the odds: 1 in N each minute, N minutes in hours. */
 export function vaultRuleText(odds: number): string {
-  return `0.1 HLO goes in every minute, plus any minute nobody traded. Every minute it has a 1 in ${odds.toLocaleString("en-US")} chance to pop (${popOftenText(odds)}). When it pops, 90% is shared by points among wallets with at least 1 point and 10% stays for the next round. 1 point per $1,000 traded.`;
+  return `0.1 HLO goes in every minute. Every minute it has a 1 in ${odds.toLocaleString("en-US")} chance to pop (${popOftenText(odds)}). When it pops, 90% is shared by points among wallets with at least 1 point and 10% stays for the next round. 1 point per $1,000 traded.`;
 }
 
 /** Under the minimum: how much more trading reaches it, rounded up to a dollar. Null with no points or at the minimum. */

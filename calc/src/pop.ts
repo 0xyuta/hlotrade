@@ -45,6 +45,20 @@ export function popMinimum(chainId: number): PopMinimum {
 
 export const minimumAt = (rule: PopMinimum, minute: number): bigint => (minute >= rule.fromMinute ? rule.units : 0n);
 
+/**
+ * From this minute on, a minute nobody trades (no counted fee) makes no trader HLO: its 1 HLO is never mined, so the
+ * vault gains only its 0.1 (spec 2026-11-04). Before it, that 1 HLO went into the vault, and a fresh verifier replays
+ * those minutes that way. 999 changed at minute 2220 (2026-11-04 01:01 UTC); 998 keeps the launch rule (null: never); anvil from
+ * launch.
+ */
+const QUIET_FROM: Readonly<Record<number, number | null>> = { 999: 2220, 998: null, 31337: 0 };
+
+export function quietMinuteFrom(chainId: number): number | null {
+  const q = Object.hasOwn(QUIET_FROM, chainId) ? QUIET_FROM[chainId] : undefined;
+  if (q === undefined) throw new Error(`no quiet-minute rule for chain ${chainId}`);
+  return q;
+}
+
 /** Spec §2 rule 3: minute m pops if uint256(keccak256(abi.encodePacked(bytes32 hash(B(m)), uint256 m))) % odds == 0. */
 export function popsAt(hash: Hex, minute: number, odds: number): boolean {
   return BigInt(keccak256(encodePacked(["bytes32", "uint256"], [hash, BigInt(minute)]))) % BigInt(odds) === 0n;

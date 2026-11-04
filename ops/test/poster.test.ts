@@ -151,7 +151,7 @@ describe("Poster.tick", () => {
 
     // the same rows through the calculator directly (the fake seed block for bounds 7..100 is 53)
     const s = newCalcState(L, popOdds(CHAIN));
-    const res = applyCheckpoint(s, { minimum: { fromMinute: 0, units: 0n },
+    const res = applyCheckpoint(s, { minimum: { fromMinute: 0, units: 0n }, quietFrom: null,
       throughMinute: 0, refBlock: 100n, rows: [{ minute: 0, user: A, fee: FEE }], seeds: seedsFor(0, 0, { odds: 60, block: () => 53n }),
       burned: 0n, refined: 0n, claimed: new Map(),
     });

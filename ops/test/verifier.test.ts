@@ -946,6 +946,20 @@ describe("recovery: former posters, cancelled minutes, guardian actions", () => 
   });
 });
 
+describe("minutes nobody trades (spec 2026-11-04)", () => {
+  it("the poster and verifier both apply the chain's quiet-minute rule: on anvil a minute with no fee adds only 0.1 HLO", async () => {
+    // anvil: odds 1 (every minute pops), no minimum, quiet minutes from launch. A trades in minute 0 only.
+    const fx = await posterRun({ minutes: 4, chainId: 31337, fills: { [A]: [good(1, (L + 5) * 1000)] } });
+    const latest = JSON.parse(fx.files.get("latest.json")!);
+    // m0: A 1 HLO, vault 0.1, pops: A 0.09, 0.01 stays. m1..m3: +0.1 each, popping with no points: 0.31 (the launch rule: 3.31).
+    expect(latest.vault.amount).toBe((31n * 10n ** 16n).toString());
+    const f = verifier(fx, { chainId: 31337 });
+    expect(await f.v.tick()).toBe("ok");
+    expect(f.alerts).toEqual([]);
+    expect(f.pause).not.toHaveBeenCalled();
+  });
+});
+
 describe("Verifier.tick: a missing file", () => {
   it("waits quietly for 5 minutes past the minute's end, then alerts once for that minute", async () => {
     const fx = await posterRun({ minutes: 2 });

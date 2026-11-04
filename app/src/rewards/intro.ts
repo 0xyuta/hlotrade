@@ -29,7 +29,7 @@ export function introCards(odds: number): IntroCard[] {
     },
     {
       image: "vault",
-      alt: `The vault fills up, then pops. Every minute ${hlo(VAULT_PER_MINUTE, 1)} goes in, and ${fmtHlo(TRADER_PER_MINUTE, 0)} more if nobody traded. It has a 1 in ${odds.toLocaleString("en-US")} chance to pop each minute, ${popOftenText(odds)}. When it pops, ${VAULT_PAY_PCT}% is shared by points and ${100 - VAULT_PAY_PCT}% stays in the vault. To share in a pop: 1 point since the last pop. $1,000 traded = 1 point.`,
+      alt: `The vault fills up, then pops. Every minute ${hlo(VAULT_PER_MINUTE, 1)} goes in. It has a 1 in ${odds.toLocaleString("en-US")} chance to pop each minute, ${popOftenText(odds)}. When it pops, ${VAULT_PAY_PCT}% is shared by points and ${100 - VAULT_PAY_PCT}% stays in the vault. To share in a pop: 1 point since the last pop. $1,000 traded = 1 point.`,
     },
     {
       image: "claim",

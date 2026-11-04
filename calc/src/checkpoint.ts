@@ -36,6 +36,7 @@ export interface CheckpointInput {
   refined: bigint; // Σ Mining.Claimed.refined in (previous refBlock, refBlock]
   claimed: ReadonlyMap<Addr, bigint>; // Mining.claimed[user] at refBlock
   minimum: PopMinimum; // popMinimum(chainId): the least a wallet needs to share in a pop
+  quietFrom: number | null; // quietMinuteFrom(chainId): from this minute on, a minute nobody trades mines no trader HLO
 }
 
 /** One pop of the vault (spec 2026-10-30 §2 rule 6). */
@@ -126,9 +127,9 @@ function pop(s: CalcState, minute: number, block: bigint, least: bigint): VaultP
 }
 
 /**
- * Settles minutes nextMinute..throughMinute (spec 2026-10-29 §3 as changed by 2026-10-30 §2): per minute the trader
- * emission, the vault part and dust into the vault, the fees into the points, then the pop test on the minute's seed.
- * Then shares refining. Mutates `s`.
+ * Settles minutes nextMinute..throughMinute (spec 2026-10-29 §3 as changed by 2026-10-30 §2 and 2026-11-04): per minute
+ * the trader emission (none in a minute nobody traded, from `quietFrom` on), the vault part and dust into the vault, the
+ * fees into the points, then the pop test on the minute's seed. Then shares refining. Mutates `s`.
  */
 export function applyCheckpoint(s: CalcState, c: CheckpointInput): CheckpointResult {
   // Validate before touching the state, so a throw leaves `s` unchanged.
@@ -137,6 +138,7 @@ export function applyCheckpoint(s: CalcState, c: CheckpointInput): CheckpointRes
   if (c.refined < 0n) throw new Error(`refined ${c.refined} is negative`);
   if (c.throughMinute < s.nextMinute) throw new Error(`minute ${c.throughMinute} is already checkpointed`);
   if (c.refBlock < s.refBlock) throw new Error(`refBlock ${c.refBlock} is below ${s.refBlock}`);
+  if (c.quietFrom !== null && !Number.isSafeInteger(c.quietFrom)) throw new Error(`quietFrom ${c.quietFrom} is not a safe integer`);
   const first = s.nextMinute;
   const count = c.throughMinute - first + 1;
   if (c.seeds.length !== count) throw new Error(`${c.seeds.length} seeds for the ${count} minutes ${first}..${c.throughMinute}`);
@@ -158,15 +160,17 @@ export function applyCheckpoint(s: CalcState, c: CheckpointInput): CheckpointRes
   const pops: VaultPop[] = [];
 
   for (let m = first; m <= c.throughMinute; m++) {
+    const f = fees.get(m);
+    let F = 0n;
+    if (f) for (const v of f.values()) F += v;
+    const quiet = F === 0n && c.quietFrom !== null && m >= c.quietFrom;
+
     const left = room > s.emitted ? room - s.emitted : 0n;
-    const trader = min(TRADER_PER_MINUTE, left);
+    const trader = quiet ? 0n : min(TRADER_PER_MINUTE, left);
     const vaultPart = min(VAULT_PER_MINUTE, left - trader);
     s.emitted += trader + vaultPart;
     emitted += trader + vaultPart;
 
-    const f = fees.get(m);
-    let F = 0n;
-    if (f) for (const v of f.values()) F += v;
     let paid = 0n;
     if (f && F > 0n) {
       for (const [u, v] of f) {

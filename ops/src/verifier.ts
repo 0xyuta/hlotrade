@@ -1,5 +1,5 @@
 import {
-  applyCheckpoint, buildTree, countedFee, DAY, dayOf, deserializeState, minuteOf, newCalcState, parseTableCsv, popMinimum, popOdds, serializeState,
+  applyCheckpoint, buildTree, countedFee, DAY, dayOf, deserializeState, minuteOf, newCalcState, parseTableCsv, popMinimum, popOdds, quietMinuteFrom, serializeState,
   type Addr, type ApiFill, type CalcState, type FeeRow, type Seed,
 } from "@hlo/calc";
 import type { Address, Hex } from "viem";
@@ -409,7 +409,7 @@ export class Verifier {
       throw e;
     }
     const next = deserializeState(serializeState(this.state));
-    const result = applyCheckpoint(next, { throughMinute: M, refBlock, rows, seeds, burned: snap.burned, refined: snap.refined, claimed: snap.claimed, minimum: popMinimum(this.deps.chainId) });
+    const result = applyCheckpoint(next, { throughMinute: M, refBlock, rows, seeds, burned: snap.burned, refined: snap.refined, claimed: snap.claimed, minimum: popMinimum(this.deps.chainId), quietFrom: quietMinuteFrom(this.deps.chainId) });
     const root = buildTree(result.entitlements).root;
     const replayProblems: string[] = [];
     if (lower(root) !== lower(file.root)) replayProblems.push(`root: file ${file.root}, replay ${root}`);

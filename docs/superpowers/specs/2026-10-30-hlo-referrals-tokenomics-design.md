@@ -40,7 +40,7 @@ For a connected wallet, from `referral` (chain-independent, read when the tab op
 Static text, numbers from the code's constants, plus live figures where the Rewards data already has them:
 
 - **Supply:** 5,000,000 HLO cap. The trading pool opens 7 days and 1 hour after launch, seeded with 10,000 HLO and all the USDC the buyback collected until then; its pool tokens are locked forever. HLO that is burned can be mined again (the cap counts what exists).
-- **Mining, every minute:** 1 HLO to that minute's traders, shared by the builder fees they paid; a minute nobody trades sends its 1 HLO to the vault.
+- **Mining, every minute:** 1 HLO to that minute's traders, shared by the builder fees they paid; a minute nobody trades sends its 1 HLO to the vault (since 2026-11-04: a minute nobody trades mines nothing, spec `2026-11-04-hlo-quiet-minutes-design.md`).
 - **The vault:** 0.1 HLO a minute. Each minute a 1 in N chance to pop (N from the network's odds: 1,250 on mainnet, about once every 21 hours); 90% shared by points (1 point per $1,000 traded since the last pop), 10% stays.
 - **Claiming:** a claim pays 90%; 10% is refined and shared with everyone who holds unclaimed HLO (earned above claimed, partial claimers included), by their unclaimed balance. Claims draw from a shared allowance (5,000 HLO, refilling 330 HLO an hour).
 - **Fees:** 0.1% builder fee on every trade: 90% to the buyback, 10% to the team. Until the trading pool opens (7 days and 1 hour after launch, `Buyback.openPool`), the buyback only collects USDC, and all of it goes into the pool with the 10,000 HLO, locked forever. After that, every 10 minutes the buyback spends a 1/144 slice of its USDC on HLO; 90% of what it buys is burned and 10% goes to stakers.

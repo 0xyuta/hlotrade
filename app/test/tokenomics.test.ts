@@ -106,7 +106,7 @@ describe("tokenomicsSections", () => {
           "HLO that is burned can be mined again: the cap counts what exists.",
         ],
       },
-      { title: "Mining, every minute", lines: ["1 HLO goes to that minute's traders, shared by the builder fees they paid.", "A minute nobody trades sends its 1 HLO to the vault."] },
+      { title: "Mining, every minute", lines: ["1 HLO goes to that minute's traders, shared by the builder fees they paid.", "A minute nobody trades mines nothing: its 1 HLO is never made."] },
       {
         title: "The vault",
         lines: [

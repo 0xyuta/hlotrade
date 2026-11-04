@@ -1,7 +1,7 @@
 import fc from "fast-check";
 import { concat, keccak256, pad, toHex, type Hex } from "viem";
 import { describe, expect, it } from "vitest";
-import { popOdds, popsAt } from "../src/index.js";
+import { popOdds, popsAt, quietMinuteFrom } from "../src/index.js";
 
 describe("popOdds", () => {
   it("1,250 on 999, 60 on 998, 1 on anvil", () => {
@@ -36,5 +36,16 @@ describe("popsAt", () => {
     const draws = Array.from({ length: 200 }, (_, m) => popsAt(h1, m, 2));
     expect(draws.some(Boolean)).toBe(true);
     expect(draws.some((x) => !x)).toBe(true);
+  });
+});
+
+describe("quietMinuteFrom", () => {
+  it("999 from minute 2220, 998 never, anvil from launch", () => {
+    expect(quietMinuteFrom(999)).toBe(2220);
+    expect(quietMinuteFrom(998)).toBeNull();
+    expect(quietMinuteFrom(31337)).toBe(0);
+  });
+  it("any other chain throws", () => {
+    for (const c of [1, 0, 42161]) expect(() => quietMinuteFrom(c), String(c)).toThrow(/no quiet-minute rule for chain/);
   });
 });
