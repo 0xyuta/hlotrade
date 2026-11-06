@@ -307,27 +307,6 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
   .modal { width: 100%; border-radius: 20px 20px 0 0; border-width: 1px 0 0; max-height: 88vh; max-height: 88dvh; padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
 }
 
-/* Mine mode: one column, the minute on top, one main button. */
-.mode-switch { flex: none; padding: 3px; }
-.mode-switch > button { padding: 5px 12px; font-size: 13px; }
-.mode-switch > button.on { background: var(--pill); color: var(--text); }
-.mine { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
-.mine-clock { position: relative; width: 148px; height: 148px; margin: 8px auto 0; }
-.mine-clock svg { width: 100%; height: 100%; display: block; transform: rotate(-90deg); }
-.mine-ring-back, .mine-ring { fill: none; stroke-width: 8; }
-.mine-ring-back { stroke: var(--card-2); }
-.mine-ring { stroke: var(--brand); stroke-linecap: round; }
-.mine-clock-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
-.mine-clock-text strong { font-size: 32px; font-weight: 600; }
-.mine-center { text-align: center; margin: 0; }
-.mine-last { color: var(--brand-deep); }
-.mine-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.mine-stat { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-s); padding: 12px 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; }
-.mine-stat strong { font-size: 22px; font-weight: 600; }
-.mine-order { display: flex; flex-direction: column; gap: 12px; }
-.mine-amounts { gap: 6px; margin-top: 8px; }
-.mine-amounts .btn { flex: 1; }
-.mine-amounts .btn.on { background: var(--brand-soft); border-color: var(--brand); color: var(--brand-deep); }
-/* One row on a phone: the logo stays, its name gives way to the switch and the wallet. */
+/* One row on a phone: the logo stays, its name gives way to the wallet. */
 @media (max-width: 860px) { .topbar { flex-wrap: nowrap; gap: 8px; } .topbar-actions { flex-wrap: nowrap; gap: 6px; } .net-pill { flex: none; } }
-@media (max-width: 520px) { .mode-switch > button { padding: 5px 9px; } .brand-name { display: none; } }
+@media (max-width: 520px) { .brand-name { display: none; } }

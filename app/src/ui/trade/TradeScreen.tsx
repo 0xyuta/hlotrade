@@ -16,14 +16,18 @@ const loadChart = () => import("./Chart").then((m) => ({ default: m.Chart }));
 /** On a phone one part shows at a time (styles.css); on a wide screen always "trade", and everything shows. */
 export type TradeView = "markets" | "trade" | "positions";
 
-export function TradeScreen({ view = "trade", onView }: { view?: TradeView; onView?(v: TradeView): void }) {
+/** `linkCoin`: the market a ?coin= link asked for (hl/coinLink.ts); it is not stored, the stored market stays as it was. */
+export function TradeScreen({ view = "trade", onView, linkCoin = null }: { view?: TradeView; onView?(v: TradeView): void; linkCoin?: string | null }) {
   const { markets } = useHl();
   const narrow = useNarrow();
   const [Chart, retryChart] = useRetryableLazy(loadChart);
-  const [coin, setCoin] = useState(() => browserKV.getItem(COIN_KEY) ?? "BTC");
-  // A stored coin that is not listed on this network (or got delisted) falls back to the busiest market.
+  const [coin, setCoin] = useState(() => linkCoin ?? browserKV.getItem(COIN_KEY) ?? "BTC");
+  // A coin that is not listed on this network (a stored one that got delisted, or a link's) falls back to the stored
+  // market if that one is listed, else to the busiest market.
   useEffect(() => {
-    if (markets.length && !markets.some((m) => m.name === coin)) setCoin(markets[0].name);
+    if (!markets.length || markets.some((m) => m.name === coin)) return;
+    const stored = browserKV.getItem(COIN_KEY);
+    setCoin(stored && markets.some((m) => m.name === stored) ? stored : markets[0].name);
   }, [markets, coin]);
   // The answer to an order sent before the user switched market (the form is keyed by coin, so it is gone by then).
   const [late, setLate] = useState<OrderResult | null>(null);

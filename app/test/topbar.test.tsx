@@ -26,27 +26,19 @@ describe("the top bar stays one row wherever it has tabs", () => {
   });
 });
 
-describe("TopBar's mode switch", () => {
-  it("offers Trade and Mine and says which is on", () => {
-    const onMode = vi.fn();
-    render(<TopBar tab="trade" onTab={() => {}} mode="full" onMode={onMode} />);
-    const sw = within(screen.getByRole("group", { name: "App mode" }));
-    expect(sw.getByRole("button", { name: "Trade" }).getAttribute("aria-pressed")).toBe("true");
-    fireEvent.click(sw.getByRole("button", { name: "Mine" }));
-    expect(onMode).toHaveBeenCalledWith("mine");
-  });
-  it("hides the tabs in mine mode", () => {
-    render(<TopBar tab="trade" onTab={() => {}} mode="mine" onMode={() => {}} />);
-    expect(screen.queryByRole("navigation")).toBeNull();
-    expect(screen.queryByText("Rewards")).toBeNull();
-    expect(within(screen.getByRole("group", { name: "App mode" })).getByRole("button", { name: "Mine" }).getAttribute("aria-pressed")).toBe("true");
+describe("no Trade | Mine switch", () => {
+  it("is gone from the top bar; the tabs always show on a wide screen", () => {
+    render(<TopBar tab="trade" onTab={() => {}} />);
+    expect(screen.queryByRole("group", { name: "App mode" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Mine" })).toBeNull();
+    expect(screen.getByRole("navigation")).toBeTruthy();
   });
 });
 
 describe("TopBar tabs", () => {
   it("lists the tabs in order, marks the open one and switches on click", () => {
     const onTab = vi.fn();
-    render(<TopBar tab="referrals" onTab={onTab} mode="full" onMode={() => {}} />);
+    render(<TopBar tab="referrals" onTab={onTab} />);
     const nav = screen.getByRole("navigation");
     expect([...nav.querySelectorAll("button")].map((b) => b.textContent)).toEqual(["Trade", "Rewards", "Explore", "Bots", "Tokenomics", "Referrals"]);
     expect(screen.getByText("Referrals").className).toContain("on");

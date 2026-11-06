@@ -1,6 +1,5 @@
 import { Suspense, useState, type ReactNode } from "react";
 import type { Tab } from "../App";
-import type { AppMode } from "./mode";
 import { useConfig } from "../config/context";
 import { allowed } from "../wallet/permissions";
 import { useSession } from "../wallet/session";
@@ -23,7 +22,7 @@ const TABS: { tab: Tab; label: string }[] = [
   { tab: "referrals", label: "Referrals" },
 ];
 
-export function TopBar({ tab, onTab, mode, onMode }: { tab: Tab; onTab(t: Tab): void; mode: AppMode; onMode(m: AppMode): void }) {
+export function TopBar({ tab, onTab }: { tab: Tab; onTab(t: Tab): void }) {
   const cfg = useConfig();
   const { session } = useSession();
   const narrow = useNarrow(); // a phone has the bottom bar instead
@@ -41,7 +40,7 @@ export function TopBar({ tab, onTab, mode, onMode }: { tab: Tab; onTab(t: Tab): 
   return (
     <header className="topbar">
       <a className="brand" href="/" aria-label="HLO"><HaloLogo size={28} /><span className="brand-name">HLO</span></a>
-      {!narrow && mode === "full" && (
+      {!narrow && (
         <nav className="nav">
           {TABS.map((t) => (
             <button key={t.tab} className={`nav-btn ${tab === t.tab ? "on" : ""}`} onClick={() => onTab(t.tab)}>{t.label}</button>
@@ -50,10 +49,6 @@ export function TopBar({ tab, onTab, mode, onMode }: { tab: Tab; onTab(t: Tab): 
       )}
       {cfg.network === "testnet" && <span className="net-pill">testnet</span>}
       <div className="topbar-actions">
-        <div className="seg mode-switch" role="group" aria-label="App mode">
-          <button className={mode === "full" ? "on" : ""} aria-pressed={mode === "full"} onClick={() => onMode("full")}>Trade</button>
-          <button className={mode === "mine" ? "on" : ""} aria-pressed={mode === "mine"} onClick={() => onMode("mine")}>Mine</button>
-        </div>
         {allowed(session.kind, "transfer") && (
           <>
             <button className="btn small hide-narrow" onClick={() => setTransfer("deposit")}>Deposit</button>

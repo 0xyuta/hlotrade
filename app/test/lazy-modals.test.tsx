@@ -50,7 +50,7 @@ describe("lazily loaded dialogs (Task 3 review)", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     const reload = vi.fn();
     vi.stubGlobal("location", { ...window.location, reload });
-    render(<TopBar tab="trade" onTab={() => {}} mode="full" onMode={() => {}} />);
+    render(<TopBar tab="trade" onTab={() => {}} />);
     fireEvent.click(screen.getAllByRole("button", { name: "Deposit" })[0]);
     const failed = (await screen.findByText(/did not load/)).closest("[role=dialog]") as HTMLElement;
     expect(failed.getAttribute("aria-label")).toBe("Deposit USDC");
@@ -70,7 +70,7 @@ describe("lazily loaded dialogs (Task 3 review)", () => {
   });
   it("the pair modal: a failed chunk stays in a closable dialog with Try again, not the page-wide fallback", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
-    render(<TopBar tab="trade" onTab={() => {}} mode="full" onMode={() => {}} />);
+    render(<TopBar tab="trade" onTab={() => {}} />);
     fireEvent.click(screen.getByLabelText("Account"));
     fireEvent.click(screen.getByRole("button", { name: "Pair phone…" }));
     const failed = (await screen.findByText(/did not load/)).closest("[role=dialog]") as HTMLElement;

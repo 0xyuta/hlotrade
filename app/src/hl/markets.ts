@@ -1,4 +1,4 @@
-/** The market the trade and mine screens have open (browser storage). */
+/** The market the trade screen has open (browser storage). */
 export const COIN_KEY = "hlo:coin";
 
 export interface Market {

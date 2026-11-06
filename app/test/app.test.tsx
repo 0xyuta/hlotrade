@@ -11,13 +11,17 @@ vi.mock("../src/hl/TradingProvider", () => ({ TradingProvider: pass }));
 vi.mock("../src/hl/AccountProvider", () => ({ AccountProvider: pass }));
 vi.mock("../src/ui/Footer", () => ({ Footer: () => null }));
 vi.mock("../src/ui/useNarrow", () => ({ useNarrow: () => narrow.value }));
-vi.mock("../src/ui/trade/TradeScreen", () => ({ TradeScreen: () => <p>the trade screen</p> }));
-vi.mock("../src/ui/mine/MineScreen", () => ({ MineScreen: () => <p>the mine screen</p> }));
+vi.mock("../src/ui/trade/TradeScreen", () => ({
+  TradeScreen: ({ view, linkCoin }: { view: string; linkCoin: string | null }) => (
+    <>
+      <p>the trade screen</p>
+      <p>view {view}, link coin {linkCoin ?? "none"}</p>
+    </>
+  ),
+}));
 vi.mock("../src/ui/BottomNav", () => ({ BottomNav: () => <nav>the bottom bar</nav> }));
 vi.mock("../src/ui/intro/IntroModal", () => ({ IntroModal: ({ onClose }: { onClose(): void }) => <button onClick={onClose}>the intro</button> }));
-vi.mock("../src/ui/TopBar", () => ({
-  TopBar: ({ mode, onMode }: { mode: string; onMode(m: string): void }) => <button onClick={() => onMode(mode === "mine" ? "full" : "mine")}>switch from {mode}</button>,
-}));
+vi.mock("../src/ui/TopBar", () => ({ TopBar: () => <header>the top bar</header> }));
 
 import { App } from "../src/App";
 
@@ -37,36 +41,29 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("the Trade | Mine switch", () => {
-  it("starts on the full app, switches to mine and back, and remembers it", async () => {
-    const { unmount } = render(<App config={config} />);
-    expect(screen.getByText("the trade screen")).toBeTruthy();
-    fireEvent.click(screen.getByText("switch from full"));
-    expect(await screen.findByText("the mine screen")).toBeTruthy();
-    expect(screen.queryByText("the trade screen")).toBeNull();
-    expect(localStorage.getItem("hlo:mode")).toBe("mine");
-    unmount();
+describe("a ?coin= link (the chart site's Trade on HLO button)", () => {
+  const at = (search: string) => vi.stubGlobal("location", { ...window.location, pathname: "/", search });
+  it("opens Trade on that market, on a phone too rather than Markets", () => {
+    narrow.value = true;
+    at("?coin=HYPE");
     render(<App config={config} />);
-    expect(await screen.findByText("the mine screen")).toBeTruthy();
-    fireEvent.click(screen.getByText("switch from mine"));
-    expect(await screen.findByText("the trade screen")).toBeTruthy();
-    expect(localStorage.getItem("hlo:mode")).toBe("full");
+    expect(screen.getByText("view trade, link coin HYPE")).toBeTruthy();
   });
+  it("is ignored when it is not a plain market name", () => {
+    narrow.value = true;
+    at("?coin=xyz:TSLA");
+    render(<App config={config} />);
+    expect(screen.getByText("view markets, link coin none")).toBeTruthy();
+  });
+});
 
-  it("has no bottom bar on a phone in mine mode", async () => {
+describe("Mine mode is gone", () => {
+  it("a browser that had chosen Mine before opens the full app with its bottom bar", () => {
+    localStorage.setItem("hlo:mode", "mine");
     narrow.value = true;
     render(<App config={config} />);
+    expect(screen.getByText("the trade screen")).toBeTruthy();
     expect(screen.getByText("the bottom bar")).toBeTruthy();
-    fireEvent.click(screen.getByText("switch from full"));
-    expect(await screen.findByText("the mine screen")).toBeTruthy();
-    expect(screen.queryByText("the bottom bar")).toBeNull();
-  });
-
-  it("the public /bots link opens the full app even after mine was chosen", () => {
-    localStorage.setItem("hlo:mode", "mine");
-    vi.stubGlobal("location", { ...window.location, pathname: "/bots", search: "" });
-    render(<App config={config} />);
-    expect(screen.getByText("switch from full")).toBeTruthy();
   });
 });
 

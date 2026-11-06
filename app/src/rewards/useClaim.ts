@@ -11,7 +11,7 @@ import { useSession } from "../wallet/session";
 import { claimResultFromReceipt, type ReceiptClient } from "./claim";
 import type { ClaimPlan } from "./model";
 
-/** Sends a claim plan from the wallet: Settle & claim on the Rewards screen and in mine mode. */
+/** Sends a claim plan from the wallet: Settle & claim on the Rewards screen. */
 export function useClaim(o: { plan: ClaimPlan | null; master: Address | null; reload(): void; hold(claimedTo: bigint): void }) {
   const cfg = useConfig();
   const { write } = useSession();
