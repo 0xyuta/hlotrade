@@ -13,8 +13,8 @@ const ITEMS: { tab: Tab; label: string; icon: ReactNode }[] = [
   { tab: "more", label: "More", icon: icon(<><circle cx="5" cy="12" r="1.2" /><circle cx="12" cy="12" r="1.2" /><circle cx="19" cy="12" r="1.2" /></>) },
 ];
 
-/** The phone's tabs. Explore, Bots, Tokenomics, Referrals and Swap are reached through More, so it stays lit on them. */
-const MORE: readonly Tab[] = ["explore", "bots", "tokenomics", "referrals", "swap"];
+/** The phone's tabs. Explore, Bots, Tokenomics and Referrals are reached through More, so it stays lit on them. */
+const MORE: readonly Tab[] = ["explore", "bots", "tokenomics", "referrals"];
 
 export function BottomNav({ tab, onTab }: { tab: Tab; onTab(t: Tab): void }) {
   const lit: Tab = MORE.includes(tab) ? "more" : tab;

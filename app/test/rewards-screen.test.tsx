@@ -295,7 +295,7 @@ describe("RewardsScreen", () => {
     expect((screen.getByRole("button", { name: "Settle & claim" }) as HTMLButtonElement).disabled).toBe(true);
     expect(write).not.toHaveBeenCalled();
   });
-  it("on mainnet, Buy HLO asks the app to open Swap", () => {
+  it("on mainnet, Swap asks the app to open the swap card and shows the token marks", () => {
     cfg = {
       network: "mainnet",
       hyperEvmChainId: 999,
@@ -304,7 +304,10 @@ describe("RewardsScreen", () => {
     const seen = vi.fn();
     window.addEventListener("hlo-buy-hlo", seen);
     render(<RewardsScreen />);
-    fireEvent.click(screen.getByRole("button", { name: "Buy HLO" }));
+    const swap = screen.getByRole("button", { name: "Swap" });
+    expect(swap.querySelector("svg")).toBeTruthy();
+    expect(swap.querySelector('img[src$="/coins/USDC.svg"]')).toBeTruthy();
+    fireEvent.click(swap);
     expect(seen).toHaveBeenCalledTimes(1);
     window.removeEventListener("hlo-buy-hlo", seen);
   });

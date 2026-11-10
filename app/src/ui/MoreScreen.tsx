@@ -1,6 +1,4 @@
 import type { Tab } from "../App";
-import { useConfig } from "../config/context";
-import { swapMarket } from "../swap/market";
 
 const ROWS: { tab: Tab; label: string; text: string }[] = [
   { tab: "explore", label: "Explore", text: "Live minutes and whether your trades were counted" },
@@ -9,16 +7,12 @@ const ROWS: { tab: Tab; label: string; text: string }[] = [
   { tab: "referrals", label: "Referrals", text: "Your code and your USDC rewards" },
 ];
 
-/** The phone's More tab: what does not fit on the bottom bar. Swap is mainnet only. */
+/** The phone's More tab: what does not fit on the bottom bar. */
 export function MoreScreen({ onTab }: { onTab(t: Tab): void }) {
-  const cfg = useConfig();
-  const rows = swapMarket(cfg.hyperEvmChainId, cfg.contracts)
-    ? [{ tab: "swap" as const, label: "Swap", text: "Buy HLO, or swap it for USDC" }, ...ROWS]
-    : ROWS;
   return (
     <section>
       <h1 className="page-title">More</h1>
-      {rows.map((r) => (
+      {ROWS.map((r) => (
         <button key={r.tab} className="more-row" onClick={() => onTab(r.tab)}>
           <span>
             <strong>{r.label}</strong>

@@ -55,18 +55,24 @@ describe("TopBar tabs", () => {
     expect(onTab).toHaveBeenCalledWith("tokenomics");
     expect(screen.queryByRole("button", { name: "Buy HLO" })).toBeNull();
   });
-  it("on mainnet, Swap sits after Rewards and Buy HLO opens it", () => {
+  it("on mainnet, Buy HLO stays off the tab list and opens the swap card", () => {
     cfg.current = {
       network: "mainnet",
       hyperEvmChainId: 999,
       contracts: { token: "0xa4Bb42d6D7F36b6EA0C4A0890691826C9C077005", pair: "0x0Bc15fd6432bc63c89E2c6623fbCB9a86bA427db" },
     };
     const onTab = vi.fn();
+    const seen = vi.fn();
+    window.addEventListener("hlo-buy-hlo", seen);
     render(<TopBar tab="trade" onTab={onTab} />);
     const nav = screen.getByRole("navigation");
-    expect([...nav.querySelectorAll("button")].map((b) => b.textContent)).toEqual(["Trade", "Rewards", "Swap", "Explore", "Bots", "Tokenomics", "Referrals"]);
-    fireEvent.click(screen.getByRole("button", { name: "Buy HLO" }));
-    expect(onTab).toHaveBeenCalledWith("swap");
+    expect([...nav.querySelectorAll("button")].map((b) => b.textContent)).toEqual(["Trade", "Rewards", "Explore", "Bots", "Tokenomics", "Referrals"]);
+    const buy = screen.getByRole("button", { name: "Buy HLO" });
+    expect(buy.querySelector("svg")).toBeTruthy();
+    fireEvent.click(buy);
+    expect(onTab).not.toHaveBeenCalled();
+    expect(seen).toHaveBeenCalledTimes(1);
+    window.removeEventListener("hlo-buy-hlo", seen);
   });
   it("nothing on the bar traps the transfer dialogs: a filter or transform would make their position: fixed relative to the bar and cut them off", () => {
     const css = readFileSync(join(__dirname, "../src/styles.css"), "utf8");

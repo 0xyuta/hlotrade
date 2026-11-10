@@ -14,7 +14,7 @@ import { WalletButton } from "./WalletButton";
 
 const loadTransferModal = () => import("./transfer/TransferModal").then((m) => ({ default: m.TransferModal }));
 
-/** The tabs, in order. Swap sits after Rewards on mainnet, where the HLO/USDC market is. */
+/** The tabs, in order (Trade, Rewards, Explore, Bots, Tokenomics, Referrals). Swap is a card, not a tab. */
 const TABS: { tab: Tab; label: string }[] = [
   { tab: "trade", label: "Trade" },
   { tab: "rewards", label: "Rewards" },
@@ -23,12 +23,6 @@ const TABS: { tab: Tab; label: string }[] = [
   { tab: "tokenomics", label: "Tokenomics" },
   { tab: "referrals", label: "Referrals" },
 ];
-
-function navTabs(showSwap: boolean): { tab: Tab; label: string }[] {
-  if (!showSwap) return TABS;
-  const i = TABS.findIndex((t) => t.tab === "rewards");
-  return [...TABS.slice(0, i + 1), { tab: "swap", label: "Swap" }, ...TABS.slice(i + 1)];
-}
 
 export function TopBar({ tab, onTab }: { tab: Tab; onTab(t: Tab): void }) {
   const cfg = useConfig();
@@ -51,14 +45,19 @@ export function TopBar({ tab, onTab }: { tab: Tab; onTab(t: Tab): void }) {
       <a className="brand" href="/" aria-label="HLO"><HaloLogo size={28} /><span className="brand-name">HLO</span></a>
       {!narrow && (
         <nav className="nav">
-          {navTabs(showSwap).map((t) => (
+          {TABS.map((t) => (
             <button key={t.tab} className={`nav-btn ${tab === t.tab ? "on" : ""}`} onClick={() => onTab(t.tab)}>{t.label}</button>
           ))}
         </nav>
       )}
       {cfg.network === "testnet" && <span className="net-pill">testnet</span>}
       <div className="topbar-actions">
-        {showSwap && <button className="btn small primary" onClick={() => { requestBuyHlo(); onTab("swap"); }}>Buy HLO</button>}
+        {showSwap && (
+          <button className="btn small primary with-icon" onClick={() => requestBuyHlo()}>
+            <HaloLogo size={16} />
+            Buy HLO
+          </button>
+        )}
         {allowed(session.kind, "transfer") && (
           <>
             <button className="btn small hide-narrow" onClick={() => setTransfer("deposit")}>Deposit</button>

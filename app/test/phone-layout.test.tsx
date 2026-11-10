@@ -63,7 +63,7 @@ describe("BottomNav", () => {
     fireEvent.click(screen.getByRole("button", { name: "Positions" }));
     expect(onTab).toHaveBeenCalledWith("positions");
   });
-  it.each(["explore", "bots", "tokenomics", "referrals", "swap"] as const)("More stays lit on %s, which is reached through it", (tab) => {
+  it.each(["explore", "bots", "tokenomics", "referrals"] as const)("More stays lit on %s, which is reached through it", (tab) => {
     render(<BottomNav tab={tab} onTab={() => {}} />);
     expect(screen.getByRole("button", { name: "More" }).getAttribute("aria-current")).toBe("page");
   });

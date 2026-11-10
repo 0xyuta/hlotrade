@@ -24,11 +24,22 @@ import { readSwapSnapshot, type SwapReader } from "../../swap/read";
 import { viemChain } from "../../wallet/chains";
 import { allowed, PAIRED_BLOCKED_TEXT } from "../../wallet/permissions";
 import { useSession } from "../../wallet/session";
+import { CoinIcon } from "../CoinIcon";
+import { HaloLogo } from "../Logo";
 import { useSwapPool } from "./useSwapPool";
 
 const PRESETS = ["0.5", "1", "3"] as const;
 
-/** Buy HLO (USDC → HLO) or swap HLO back to USDC, against the deployment's Uniswap V2 pair. */
+function TokenLabel({ symbol }: { symbol: "HLO" | "USDC" }) {
+  return (
+    <span className="swap-token">
+      {symbol === "HLO" ? <HaloLogo size={22} /> : <CoinIcon coin="USDC" size={22} />}
+      {symbol}
+    </span>
+  );
+}
+
+/** The swap card body: buy HLO or swap it back to USDC. The dialog around it lives in App. */
 export function SwapScreen() {
   const cfg = useConfig();
   const { session, write } = useSession();
@@ -50,12 +61,7 @@ export function SwapScreen() {
   }), []);
 
   if (!market) {
-    return (
-      <section className="card swap-panel">
-        <h1 className="page-title">Swap</h1>
-        <p className="muted">{SWAP_MAINNET_ONLY}</p>
-      </section>
-    );
+    return <p className="muted">{SWAP_MAINNET_ONLY}</p>;
   }
 
   const tokens = tokensFor(side, market);
@@ -114,8 +120,7 @@ export function SwapScreen() {
   };
 
   return (
-    <section className="card swap-panel">
-      <h1 className="page-title">Swap</h1>
+    <div className="swap-panel">
       <p className="card-sub">{SWAP_INTRO}</p>
       {state.kind === "loading" ? <p className="muted">{SWAP_READING}</p> : null}
       {state.kind === "down" ? (
@@ -133,11 +138,11 @@ export function SwapScreen() {
           }}
         >
           <div className="seg" role="group" aria-label="Direction">
-            <button type="button" className={side === "buy" ? "on" : ""} aria-pressed={side === "buy"} onClick={() => pick("buy")}>Buy HLO</button>
-            <button type="button" className={side === "sell" ? "on" : ""} aria-pressed={side === "sell"} onClick={() => pick("sell")}>Swap to USDC</button>
+            <button type="button" className={side === "buy" ? "on" : ""} aria-pressed={side === "buy"} onClick={() => pick("buy")}><HaloLogo size={16} /> Buy HLO</button>
+            <button type="button" className={side === "sell" ? "on" : ""} aria-pressed={side === "sell"} onClick={() => pick("sell")}><CoinIcon coin="USDC" size={16} /> Swap to USDC</button>
           </div>
           <div className="swap-box">
-            <div className="row between"><span className="muted small">You pay</span><span className="muted small">{tokens.paySymbol}</span></div>
+            <div className="row between"><span className="muted small">You pay</span><TokenLabel symbol={tokens.paySymbol} /></div>
             <input id="swap-pay" className="swap-amt" inputMode="decimal" autoComplete="off" placeholder="0" aria-label="You pay" value={amount} onChange={(e) => setAmount(e.target.value)} />
             {balance !== null && (
               <div className="row between">
@@ -147,7 +152,7 @@ export function SwapScreen() {
             )}
           </div>
           <div className="swap-box">
-            <div className="row between"><span className="muted small">You receive</span><span className="muted small">{tokens.receiveSymbol}</span></div>
+            <div className="row between"><span className="muted small">You receive</span><TokenLabel symbol={tokens.receiveSymbol} /></div>
             <div className="swap-receive">{quote ? fmtAmount(quote.quoted, tokens.receiveDecimals) : "—"}</div>
             {quote && <p className="muted small">Minimum received {fmtAmount(quote.amountOutMin, tokens.receiveDecimals)} {tokens.receiveSymbol}</p>}
           </div>
@@ -168,6 +173,6 @@ export function SwapScreen() {
           {msg && <p className="note">{msg}</p>}
         </form>
       ) : null}
-    </section>
+    </div>
   );
 }

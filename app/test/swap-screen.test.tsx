@@ -4,6 +4,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AppConfig } from "../src/config/validate";
+import { COIN_ICONS_ORIGIN } from "../src/config/csp";
 import { SWAP_CONNECT, SWAP_MAINNET_ONLY, SWAP_PAIR, SWAP_QUOTE_CHANGED } from "../src/swap/copy";
 import { amountOutMin, fmtAmount, quoteExactIn } from "../src/swap/quote";
 import { V2_ROUTER_999 } from "../src/swap/market";
@@ -78,6 +79,8 @@ describe("SwapScreen", () => {
     expect(screen.getByText(`Minimum received ${fmtAmount(minBuy, 18)} HLO`)).toBeTruthy();
     expect(screen.getByText("Balance 20")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Approve and buy" })).toBeTruthy();
+    expect(document.querySelectorAll(`img[src="${COIN_ICONS_ORIGIN}/coins/USDC.svg"]`).length).toBeGreaterThan(0);
+    expect(document.querySelectorAll(".swap-token svg").length).toBeGreaterThan(0);
     expect(document.body.textContent).not.toContain("7.410157");
     expect(document.body.textContent).not.toContain("10,000");
   });
