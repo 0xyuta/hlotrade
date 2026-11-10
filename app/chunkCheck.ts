@@ -23,7 +23,7 @@ export interface ChunkRule {
 }
 
 const TRADING = [/^src\/App\.tsx$/, /^src\/ui\/trade\//, /^node_modules\/@nktkas\//];
-const LAZY_SCREENS = [/^src\/ui\/rewards\//, /^src\/ui\/referrals\//, /^src\/ui\/tokenomics\//, /^src\/ui\/explore\//, /^src\/ui\/bots\//, /^src\/ui\/intro\//, /^src\/ui\/transfer\//, /^src\/ui\/PairModal\.tsx$/, /^src\/ui\/trade\/Chart\.tsx$/, /^node_modules\/lightweight-charts\//, /^node_modules\/qrcode\//];
+const LAZY_SCREENS = [/^src\/ui\/rewards\//, /^src\/ui\/referrals\//, /^src\/ui\/tokenomics\//, /^src\/ui\/explore\//, /^src\/ui\/bots\//, /^src\/ui\/swap\//, /^src\/ui\/intro\//, /^src\/ui\/transfer\//, /^src\/ui\/PairModal\.tsx$/, /^src\/ui\/trade\/Chart\.tsx$/, /^node_modules\/lightweight-charts\//, /^node_modules\/qrcode\//];
 
 const JSQR = /^node_modules\/jsqr\//;
 const PAIR_PAGE = [/^src\/ui\/pair\//, /^src\/hl\/pairing\.ts$/, JSQR];

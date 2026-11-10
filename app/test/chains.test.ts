@@ -92,7 +92,7 @@ describe("chains", () => {
 describe("permissions: a paired phone can trade only", () => {
   it("gates", () => {
     expect(allowed("paired", "trade")).toBe(true);
-    for (const a of ["enable", "pair", "claim", "stake", "transfer", "profile", "protocol", "referral"] as const) expect(allowed("paired", a)).toBe(false);
+    for (const a of ["enable", "pair", "claim", "stake", "transfer", "profile", "protocol", "referral", "swap"] as const) expect(allowed("paired", a)).toBe(false);
     expect(allowed("wallet", "claim")).toBe(true);
     expect(allowed("none", "trade")).toBe(false);
   });

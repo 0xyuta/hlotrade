@@ -307,6 +307,17 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
   .modal { width: 100%; border-radius: 20px 20px 0 0; border-width: 1px 0 0; max-height: 88vh; max-height: 88dvh; padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
 }
 
+/* Swap. One column, the same cards and pills as the rest of the app. */
+.swap-panel { width: 100%; }
+.swap-panel form { display: flex; flex-direction: column; gap: 12px; }
+.swap-panel .seg > button { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.swap-token { display: inline-flex; align-items: center; gap: 6px; color: var(--text); font-weight: 600; }
+.btn.with-icon { display: inline-flex; align-items: center; gap: 6px; }
+.swap-box { background: var(--card-2); border-radius: var(--radius-s); padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+.swap-amt, .swap-receive { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 22px; }
+.swap-amt { width: 100%; border: none; background: transparent; padding: 0; }
+.swap-panel .btn.on { border-color: var(--brand); background: var(--brand-soft); color: var(--text); }
+
 /* One row on a phone: the logo stays, its name gives way to the wallet. */
 @media (max-width: 860px) { .topbar { flex-wrap: nowrap; gap: 8px; } .topbar-actions { flex-wrap: nowrap; gap: 6px; } .net-pill { flex: none; } }
 @media (max-width: 520px) { .brand-name { display: none; } }

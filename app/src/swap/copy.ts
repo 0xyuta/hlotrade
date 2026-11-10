@@ -1,0 +1,14 @@
+export const SWAP_INTRO = "Swap HLO and USDC on HyperEVM.";
+export const SWAP_MAINNET_ONLY = "HLO and USDC swaps are on mainnet.";
+export const SWAP_PAIR = "This HLO market cannot be swapped here.";
+export const SWAP_READING = "Reading the market…";
+export const SWAP_CONNECT = "Connect a wallet to swap.";
+export const SWAP_TOO_MUCH = "That is more than your balance.";
+export const SWAP_TOO_SMALL = "That amount is too small to swap.";
+export const SWAP_NO_LIQUIDITY = "The market has no liquidity.";
+export const SWAP_SLIPPAGE = "Set slippage between 0.01% and 5%.";
+export const SWAP_SLIPPAGE_ZERO = "Slippage leaves nothing to receive.";
+export const SWAP_QUOTE_CHANGED = "The quote changed. Check the amount and try again.";
+export const SWAP_DONE = "Swapped.";
+export const SWAP_GAS = "Your wallet confirms on HyperEVM. A little HYPE pays the gas.";
+export const SWAP_CONFIRM = "Confirm in your wallet (HyperEVM, a little HYPE for gas)…";

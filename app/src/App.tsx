@@ -18,12 +18,14 @@ import { TopBar } from "./ui/TopBar";
 import { TradeScreen, type TradeView } from "./ui/trade/TradeScreen";
 import { useNarrow } from "./ui/useNarrow";
 import { SessionProvider } from "./wallet/session";
+import { BUY_HLO_EVENT } from "./swap/intent";
 
 const loadRewards = () => import("./ui/rewards/RewardsScreen").then((m) => ({ default: m.RewardsScreen }));
 const loadExplore = () => import("./ui/explore/ExploreScreen").then((m) => ({ default: m.ExploreScreen }));
 const loadBots = () => import("./ui/bots/BotsScreen").then((m) => ({ default: m.BotsScreen }));
 const loadTokenomics = () => import("./ui/tokenomics/TokenomicsScreen").then((m) => ({ default: m.TokenomicsScreen }));
 const loadReferrals = () => import("./ui/referrals/ReferralsScreen").then((m) => ({ default: m.ReferralsScreen }));
+const loadSwap = () => import("./ui/swap/SwapScreen").then((m) => ({ default: m.SwapScreen }));
 const loadIntro = () => import("./ui/intro/IntroModal").then((m) => ({ default: m.IntroModal }));
 
 /** "markets", "positions" and "more" are phone screens (the bottom bar); a wide screen shows them as Trade. */
@@ -35,9 +37,10 @@ const isLazy = (t: Tab): t is LazyTab => (LAZY_TABS as readonly Tab[]).includes(
 
 export function App({ config }: { config: AppConfig }) {
   const narrow = useNarrow();
-  // /bots is the Bots tab's public link; a ?coin= link opens Trade on that market (on a phone too). The address bar is left as it is.
+  // /bots is a public link. /swap opens Rewards with the swap card on top (the address bar stays). A ?coin= link opens Trade.
   const [linkCoin] = useState(() => coinFromLink(window.location.search));
-  const [picked, setTab] = useState<Tab>(window.location.pathname === "/bots" ? "bots" : linkCoin || !narrow ? "trade" : "markets");
+  const [swapOpen, setSwapOpen] = useState(() => window.location.pathname === "/swap");
+  const [picked, setTab] = useState<Tab>(window.location.pathname === "/bots" ? "bots" : window.location.pathname === "/swap" ? "rewards" : linkCoin || !narrow ? "trade" : "markets");
   const tab: Tab = !narrow && (picked === "markets" || picked === "positions" || picked === "more") ? "trade" : picked;
   // Rewards, Explore, Bots, Tokenomics and Referrals are lazy screens with their own retry. A Record, so a new one without a screen fails the typecheck.
   const lazy: Record<LazyTab, ReturnType<typeof useRetryableLazy>> = {
@@ -47,11 +50,18 @@ export function App({ config }: { config: AppConfig }) {
     tokenomics: useRetryableLazy(loadTokenomics),
     referrals: useRetryableLazy(loadReferrals),
   };
+  const [SwapScreen, retrySwap] = useRetryableLazy(loadSwap);
   // A `?ref=CODE` link (spec 2026-10-30 referrals §3) is kept for Enable trading, once, after the first render. The
   // address bar is left as it is.
   useEffect(() => {
     captureRef(window.location.search, browserKV, config.network);
   }, [config.network]);
+  useEffect(() => {
+    const onBuy = () => setSwapOpen(true);
+    window.addEventListener(BUY_HLO_EVENT, onBuy);
+    return () => window.removeEventListener(BUY_HLO_EVENT, onBuy);
+  }, []);
+  const closeSwap = () => setSwapOpen(false);
   const [LazyScreen, retry] = isLazy(tab) ? lazy[tab] : [null, undefined];
   // The first-visit intro: once per browser, on mainnet; Skip, Start, ✕ or Escape all mark it seen.
   const [intro, setIntro] = useState(() => showIntro(config.network, browserKV.getItem(INTRO_KEY)));
@@ -89,6 +99,15 @@ export function App({ config }: { config: AppConfig }) {
                 </main>
                 <Footer />
                 {narrow && <BottomNav tab={tab} onTab={setTab} />}
+                {swapOpen && (
+                  <ErrorBoundary scope="screen" network={config.network} onRetry={retrySwap} frame={(body) => <Modal title="Swap" onClose={closeSwap}>{body}</Modal>}>
+                    <Suspense fallback={<Modal title="Swap" onClose={closeSwap}><Loading /></Modal>}>
+                      <Modal title="Swap" onClose={closeSwap}>
+                        <SwapScreen />
+                      </Modal>
+                    </Suspense>
+                  </ErrorBoundary>
+                )}
                 {intro && (
                   // Nothing shows while the chunk loads; a failed load offers Try again in a dialog that can be closed.
                   <ErrorBoundary scope="screen" network={config.network} onRetry={retryIntro} frame={(body) => <Modal title={INTRO_TITLE} onClose={closeIntro}>{body}</Modal>}>

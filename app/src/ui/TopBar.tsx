@@ -1,6 +1,8 @@
 import { Suspense, useState, type ReactNode } from "react";
 import type { Tab } from "../App";
 import { useConfig } from "../config/context";
+import { requestBuyHlo } from "../swap/intent";
+import { swapMarket } from "../swap/market";
 import { allowed } from "../wallet/permissions";
 import { useSession } from "../wallet/session";
 import { ErrorBoundary, useRetryableLazy } from "./ErrorBoundary";
@@ -12,7 +14,7 @@ import { WalletButton } from "./WalletButton";
 
 const loadTransferModal = () => import("./transfer/TransferModal").then((m) => ({ default: m.TransferModal }));
 
-/** The tabs, in order (Trade, Rewards, Explore, Bots, Tokenomics, Referrals). */
+/** The tabs, in order (Trade, Rewards, Explore, Bots, Tokenomics, Referrals). Swap is a card, not a tab. */
 const TABS: { tab: Tab; label: string }[] = [
   { tab: "trade", label: "Trade" },
   { tab: "rewards", label: "Rewards" },
@@ -26,6 +28,7 @@ export function TopBar({ tab, onTab }: { tab: Tab; onTab(t: Tab): void }) {
   const cfg = useConfig();
   const { session } = useSession();
   const narrow = useNarrow(); // a phone has the bottom bar instead
+  const showSwap = swapMarket(cfg.hyperEvmChainId, cfg.contracts) !== null;
   const [transfer, setTransfer] = useState<"deposit" | "withdraw" | null>(null);
   const [TransferModal, retryTransfer] = useRetryableLazy(loadTransferModal);
   const closeTransfer = () => setTransfer(null);
@@ -49,6 +52,12 @@ export function TopBar({ tab, onTab }: { tab: Tab; onTab(t: Tab): void }) {
       )}
       {cfg.network === "testnet" && <span className="net-pill">testnet</span>}
       <div className="topbar-actions">
+        {showSwap && (
+          <button className="btn small primary with-icon" onClick={() => requestBuyHlo()}>
+            <HaloLogo size={16} />
+            Buy HLO
+          </button>
+        )}
         {allowed(session.kind, "transfer") && (
           <>
             <button className="btn small hide-narrow" onClick={() => setTransfer("deposit")}>Deposit</button>

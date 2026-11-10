@@ -14,8 +14,10 @@ const ITEMS: { tab: Tab; label: string; icon: ReactNode }[] = [
 ];
 
 /** The phone's tabs. Explore, Bots, Tokenomics and Referrals are reached through More, so it stays lit on them. */
+const MORE: readonly Tab[] = ["explore", "bots", "tokenomics", "referrals"];
+
 export function BottomNav({ tab, onTab }: { tab: Tab; onTab(t: Tab): void }) {
-  const lit: Tab = tab === "explore" || tab === "bots" || tab === "tokenomics" || tab === "referrals" ? "more" : tab;
+  const lit: Tab = MORE.includes(tab) ? "more" : tab;
   return (
     <nav className="bottom-nav" aria-label="Main">
       {ITEMS.map((i) => (

@@ -51,6 +51,11 @@ describe("checkChunks", () => {
     chunks[2].modules.push("src/ui/bots/BotsScreen.tsx");
     expect(checkChunks(chunks).join("\n")).toMatch(/src\/App\.tsx loads src\/ui\/bots\/BotsScreen\.tsx up front/);
   });
+  it("the App chunk must not pull the Swap screen in", () => {
+    const chunks = good();
+    chunks[2].modules.push("src/ui/swap/SwapScreen.tsx");
+    expect(checkChunks(chunks).join("\n")).toMatch(/src\/App\.tsx loads src\/ui\/swap\/SwapScreen\.tsx up front/);
+  });
   it("the App chunk must not pull the Explore screen in", () => {
     const chunks = good();
     chunks[2].modules.push("src/ui/explore/ExploreScreen.tsx");
