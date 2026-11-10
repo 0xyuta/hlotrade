@@ -14,6 +14,7 @@ vi.mock("../src/ui/Footer", () => ({ Footer: () => null }));
 vi.mock("../src/ui/TopBar", () => ({ TopBar: () => null }));
 vi.mock("../src/ui/trade/TradeScreen", () => ({ TradeScreen: ({ view }: { view: string }) => <p>trade screen: {view}</p> }));
 vi.mock("../src/ui/bots/BotsScreen", () => ({ BotsScreen: () => <p>the bots screen</p> }));
+vi.mock("../src/ui/swap/SwapScreen", () => ({ SwapScreen: () => <p>the swap screen</p> }));
 vi.mock("../src/ui/tokenomics/TokenomicsScreen", () => ({ TokenomicsScreen: () => <p>the tokenomics</p> }));
 
 import { App } from "../src/App";
@@ -45,6 +46,15 @@ describe("the App on a phone", () => {
     fireEvent.click(screen.getByRole("button", { name: /Tokenomics/ }));
     expect(await screen.findByText("the tokenomics")).toBeTruthy();
     expect(screen.getByRole("button", { name: "More" }).getAttribute("aria-current")).toBe("page");
+  });
+  it("the public link /swap opens the Swap screen; the address bar stays", async () => {
+    window.history.pushState(null, "", "/swap");
+    setWidth(true);
+    render(<App config={config} />);
+    expect(await screen.findByText("the swap screen")).toBeTruthy();
+    expect(window.location.pathname).toBe("/swap");
+    expect(screen.getByRole("button", { name: "More" }).getAttribute("aria-current")).toBe("page");
+    window.history.pushState(null, "", "/");
   });
   it("the public link /bots opens the Bots tab; the address bar stays", async () => {
     window.history.pushState(null, "", "/bots");

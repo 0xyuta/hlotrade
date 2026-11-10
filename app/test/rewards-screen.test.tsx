@@ -295,6 +295,19 @@ describe("RewardsScreen", () => {
     expect((screen.getByRole("button", { name: "Settle & claim" }) as HTMLButtonElement).disabled).toBe(true);
     expect(write).not.toHaveBeenCalled();
   });
+  it("on mainnet, Buy HLO asks the app to open Swap", () => {
+    cfg = {
+      network: "mainnet",
+      hyperEvmChainId: 999,
+      contracts: { token: "0xa4Bb42d6D7F36b6EA0C4A0890691826C9C077005", pair: "0x0Bc15fd6432bc63c89E2c6623fbCB9a86bA427db" },
+    } as unknown as AppConfig;
+    const seen = vi.fn();
+    window.addEventListener("hlo-buy-hlo", seen);
+    render(<RewardsScreen />);
+    fireEvent.click(screen.getByRole("button", { name: "Buy HLO" }));
+    expect(seen).toHaveBeenCalledTimes(1);
+    window.removeEventListener("hlo-buy-hlo", seen);
+  });
   it("says nothing about a pot, a day or today, and uses no gambling words (word boundaries: 'spot' and 'deposit' are fine)", () => {
     const { container } = render(<RewardsScreen />);
     expect(container.textContent).not.toMatch(/\bpots?\b|jackpot|lottery|prize|motherlode|\bwins?\b|\btoday\b|\bdays?\b/i);

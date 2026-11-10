@@ -1,5 +1,5 @@
 export type SessionKind = "none" | "wallet" | "paired";
-export type GatedAction = "trade" | "enable" | "pair" | "claim" | "stake" | "transfer" | "profile" | "protocol" | "referral";
+export type GatedAction = "trade" | "enable" | "pair" | "claim" | "stake" | "transfer" | "profile" | "protocol" | "referral" | "swap";
 
 /** A paired phone holds only its own agent key: it can trade, nothing else. */
 export function allowed(kind: SessionKind, a: GatedAction): boolean {

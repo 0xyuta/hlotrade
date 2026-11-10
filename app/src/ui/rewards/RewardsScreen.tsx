@@ -1,5 +1,8 @@
 import { useConfig } from "../../config/context";
 import { useTrading } from "../../hl/TradingProvider";
+import { SWAP_INTRO } from "../../swap/copy";
+import { requestBuyHlo } from "../../swap/intent";
+import { swapMarket } from "../../swap/market";
 import { POP_ODDS } from "../../rewards/odds";
 import { claimLimited, settledText } from "../../rewards/model";
 import { useClaim } from "../../rewards/useClaim";
@@ -40,9 +43,17 @@ export function RewardsScreen() {
 
   const p = d.full?.protocol;
   const queueNotice = p && y ? poolQueueText({ poolOpen: p.poolOpen, openAt: p.openAt, now: d.chain.now, claimable: y.claimable }) : null;
+  const buy = swapMarket(cfg.hyperEvmChainId, cfg.contracts) ? (
+    <div className="row" style={{ marginBottom: 12 }}>
+      <button className="btn primary" onClick={() => requestBuyHlo()}>Buy HLO</button>
+      <span className="muted small">{SWAP_INTRO}</span>
+    </div>
+  ) : null;
 
   return (
-    <div className="grid2">
+    <>
+      {buy}
+      <div className="grid2">
       {master ? (
         <YoursCard yours={y} plan={plan} problem={d.latestProblem} settled={settledText(d.chain)} queueNotice={queueNotice} claim={{ ...gate, busy, msg, onClaim: () => void claim() }} />
       ) : (
@@ -62,6 +73,7 @@ export function RewardsScreen() {
         // Staking and Buyback are read apart from the rewards, so they can fail alone.
         <section className="card"><h2 className="card-h">Staking and the buyback</h2><p className="muted">{notAvailableText(d.extraError)}</p></section>
       ) : null}
-    </div>
+      </div>
+    </>
   );
 }

@@ -66,7 +66,7 @@ afterEach(() => {
 
 describe("what a paired phone may do", () => {
   it("the permission table: a paired phone only trades; the wallet device does everything", () => {
-    const actions: GatedAction[] = ["enable", "pair", "claim", "stake", "transfer", "profile", "protocol"]; // transfer = deposit and withdraw
+    const actions: GatedAction[] = ["enable", "pair", "claim", "stake", "transfer", "profile", "protocol", "swap"]; // transfer = deposit and withdraw
     for (const a of actions) {
       expect(allowed("paired", a), `paired ${a}`).toBe(false);
       expect(allowed("wallet", a), `wallet ${a}`).toBe(true);

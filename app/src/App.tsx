@@ -18,40 +18,48 @@ import { TopBar } from "./ui/TopBar";
 import { TradeScreen, type TradeView } from "./ui/trade/TradeScreen";
 import { useNarrow } from "./ui/useNarrow";
 import { SessionProvider } from "./wallet/session";
+import { BUY_HLO_EVENT } from "./swap/intent";
 
 const loadRewards = () => import("./ui/rewards/RewardsScreen").then((m) => ({ default: m.RewardsScreen }));
 const loadExplore = () => import("./ui/explore/ExploreScreen").then((m) => ({ default: m.ExploreScreen }));
 const loadBots = () => import("./ui/bots/BotsScreen").then((m) => ({ default: m.BotsScreen }));
 const loadTokenomics = () => import("./ui/tokenomics/TokenomicsScreen").then((m) => ({ default: m.TokenomicsScreen }));
 const loadReferrals = () => import("./ui/referrals/ReferralsScreen").then((m) => ({ default: m.ReferralsScreen }));
+const loadSwap = () => import("./ui/swap/SwapScreen").then((m) => ({ default: m.SwapScreen }));
 const loadIntro = () => import("./ui/intro/IntroModal").then((m) => ({ default: m.IntroModal }));
 
 /** "markets", "positions" and "more" are phone screens (the bottom bar); a wide screen shows them as Trade. */
-export type Tab = TradeView | "rewards" | "explore" | "bots" | "tokenomics" | "referrals" | "more";
+export type Tab = TradeView | "rewards" | "explore" | "bots" | "tokenomics" | "referrals" | "swap" | "more";
 
-const LAZY_TABS = ["rewards", "explore", "bots", "tokenomics", "referrals"] as const;
+const LAZY_TABS = ["rewards", "explore", "bots", "tokenomics", "referrals", "swap"] as const;
 type LazyTab = (typeof LAZY_TABS)[number];
 const isLazy = (t: Tab): t is LazyTab => (LAZY_TABS as readonly Tab[]).includes(t);
 
 export function App({ config }: { config: AppConfig }) {
   const narrow = useNarrow();
-  // /bots is the Bots tab's public link; a ?coin= link opens Trade on that market (on a phone too). The address bar is left as it is.
+  // /bots and /swap are public links; a ?coin= link opens Trade on that market (on a phone too). The address bar is left as it is.
   const [linkCoin] = useState(() => coinFromLink(window.location.search));
-  const [picked, setTab] = useState<Tab>(window.location.pathname === "/bots" ? "bots" : linkCoin || !narrow ? "trade" : "markets");
+  const [picked, setTab] = useState<Tab>(window.location.pathname === "/bots" ? "bots" : window.location.pathname === "/swap" ? "swap" : linkCoin || !narrow ? "trade" : "markets");
   const tab: Tab = !narrow && (picked === "markets" || picked === "positions" || picked === "more") ? "trade" : picked;
-  // Rewards, Explore, Bots, Tokenomics and Referrals are lazy screens with their own retry. A Record, so a new one without a screen fails the typecheck.
+  // Rewards, Explore, Bots, Tokenomics, Referrals and Swap are lazy screens with their own retry. A Record, so a new one without a screen fails the typecheck.
   const lazy: Record<LazyTab, ReturnType<typeof useRetryableLazy>> = {
     rewards: useRetryableLazy(loadRewards),
     explore: useRetryableLazy(loadExplore),
     bots: useRetryableLazy(loadBots),
     tokenomics: useRetryableLazy(loadTokenomics),
     referrals: useRetryableLazy(loadReferrals),
+    swap: useRetryableLazy(loadSwap),
   };
   // A `?ref=CODE` link (spec 2026-10-30 referrals §3) is kept for Enable trading, once, after the first render. The
   // address bar is left as it is.
   useEffect(() => {
     captureRef(window.location.search, browserKV, config.network);
   }, [config.network]);
+  useEffect(() => {
+    const onBuy = () => setTab("swap");
+    window.addEventListener(BUY_HLO_EVENT, onBuy);
+    return () => window.removeEventListener(BUY_HLO_EVENT, onBuy);
+  }, []);
   const [LazyScreen, retry] = isLazy(tab) ? lazy[tab] : [null, undefined];
   // The first-visit intro: once per browser, on mainnet; Skip, Start, ✕ or Escape all mark it seen.
   const [intro, setIntro] = useState(() => showIntro(config.network, browserKV.getItem(INTRO_KEY)));
